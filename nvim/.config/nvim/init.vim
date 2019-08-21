@@ -12,7 +12,7 @@ set undodir=~/.vim/undodir
 
 let plug_install = 0
 let autoload_plug_path = '~/.config/nvim/autoload/plug.vim'
-if !filereadable(autoload_plug_path)
+if !filereadable(expand(autoload_plug_path))
     silent exe '!curl -fL --create-dirs -o ' . autoload_plug_path . 
         \ ' https://raw.github.com/junegunn/vim-plug/master/plug.vim'
     execute 'source ' . fnameescape(autoload_plug_path)
@@ -55,7 +55,6 @@ Plug 'justone/remotecopy'
 " Plug 'leafgarland/typescript-vim'
 Plug 'Quramy/tsuquyomi'
 Plug 'suan/vim-instant-markdown'
-Plug 'fatih/vim-go'
 Plug 'majutsushi/tagbar'
 Plug 'wokalski/autocomplete-flow', { 'do': 'npm install -g flow-bin' }
 " For func argument completion
