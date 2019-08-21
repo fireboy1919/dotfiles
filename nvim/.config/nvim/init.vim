@@ -20,7 +20,7 @@ if !filereadable(autoload_plug_path)
 endif
 unlet autoload_plug_path
 
-call plug#begin('~/.config/nvim/plugins'))
+call plug#begin('~/.config/nvim/plugins')
 Plug 'equalsraf/neovim-gui-shim'
 Plug 'tpope/vim-sensible'
 "Plug 'tpope/vim-rails'
