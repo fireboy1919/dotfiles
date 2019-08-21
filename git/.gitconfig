@@ -1,0 +1,26 @@
+[user]
+	email = rusty.phillips@flexreceipts.com
+	name = Rusty Phillips
+[merge] 
+	keepBackup = false
+	tool = p4merge 
+[mergetool] 
+	prompt=false 
+	cmd = p4merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED" 
+	keepTemporaries = false 
+	trustExitCode = false 
+	keepBackup = false 
+[diff] 
+	tool = p4merge 
+
+[difftool] 
+	prompt=false 
+	cmd = p4merge "$LOCAL" "$REMOTE" 
+	keepTemporaries = false 
+	trustExitCode = false 
+	keepBackup = false
+[push]
+	default = current
+[core]
+	autocrlf = input
+

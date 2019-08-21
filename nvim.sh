@@ -1,0 +1,1 @@
+xstow nvim
