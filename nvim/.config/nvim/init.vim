@@ -125,6 +125,7 @@ autocmd FileType java setlocal omnifunc=javacomplete#Complete
 
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#omni_patterns = {}
+let g:deoplete#delimiters = ['.','/']
 let g:deoplete#omni_patterns.java = '[^. *\t]\.\w*'
 let g:deoplete#auto_completion_start_length = 2
 let g:deoplete#sources = {}
