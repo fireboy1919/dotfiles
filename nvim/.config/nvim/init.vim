@@ -10,8 +10,7 @@ set undodir=~/.vim/undodir
 
 " Bootstrap Plug
 
-
-function! StartUp(nstall = 0
+let plug_install = 0
 let autoload_plug_path = stdpath('config') . '/autoload/plug.vim'
 if !filereadable(autoload_plug_path)
     silent exe '!curl -fL --create-dirs -o ' . autoload_plug_path . 
@@ -73,13 +72,11 @@ else
 endif
 call plug#end()
 
- 
 if plug_install
     PlugInstall --sync
 endif
 unlet plug_install
 
-endfunction
 
 autocmd VimEnter * call StartUp()
 
