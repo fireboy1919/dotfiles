@@ -1,4 +1,4 @@
-xstow tmux
+xstow tmux -t ~
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 #Start a server but don't attach to it
 tmux start-server

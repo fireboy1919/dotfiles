@@ -1,1 +1,1 @@
-xstow nvim
+xstow nvim -t ~

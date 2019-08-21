@@ -1,1 +1,1 @@
-apt update && apt install -y zsh curl nvim tmux git xstow
+apt update && apt install -y zsh curl neovim tmux git xstow

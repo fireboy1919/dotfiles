@@ -1,1 +1,1 @@
-xstow git
+xstow git -t ~
