@@ -77,6 +77,10 @@ if plug_install
 endif
 unlet plug_install
 
+function! StartUp()
+  
+endfunction
+
 
 autocmd VimEnter * call StartUp()
 
