@@ -69,6 +69,7 @@ else
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
+Plug 'artur-shaik/vim-javacomplete2'
 call plug#end()
 
 if plug_install
@@ -118,6 +119,18 @@ let g:neosnippet#enable_completed_snippet = 1
 " let g:deoplete#disable_auto_complete = 1
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
+filetype plugin indent on  
+set omnifunc=syntaxcomplete#Complete<Paste>
+autocmd FileType java setlocal omnifunc=javacomplete#Complete
+
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#omni_patterns = {}
+let g:deoplete#omni_patterns.java = '[^. *\t]\.\w*'
+let g:deoplete#auto_completion_start_length = 2
+let g:deoplete#sources = {}
+let g:deoplete#sources._ = []
+let g:deoplete#file#enable_buffer_path = 1
+
 " omnifuncs
 "augroup omnifuncs
 "  autocmd!
@@ -127,6 +140,8 @@ autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 "  autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 "  autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 "augroup end
+
+
 
 " deoplete tab-complete
 inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
