@@ -70,6 +70,18 @@ else
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
 Plug 'artur-shaik/vim-javacomplete2'
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
+
+Plug 'Shougo/echodoc.vim'
+Plug 'udalov/kotlin-vim'
+set cmdheight=2
+let g:echodoc#enable_at_startup = 1
+let g:echodoc#type = 'signature'
+" (Optional) Multi-entry selection UI.
+Plug 'junegunn/fzf'
 call plug#end()
 
 if plug_install
@@ -81,6 +93,13 @@ function! StartUp()
   
 endfunction
 
+autocmd BufReadPost *.kt setlocal filetype=kotlin
+
+" This is using this:  https://github.com/fwcd/kotlin-language-server/blob/master/BUILDING.md
+" Not ready, though.
+" let g:LanguageClient_serverCommands = {
+"    \ 'kotlin': [expand("~/.config/nvim/server/bin/kotlin-language-server")],
+"    \ }
 
 autocmd VimEnter * call StartUp()
 
