@@ -97,9 +97,9 @@ autocmd BufReadPost *.kt setlocal filetype=kotlin
 
 " This is using this:  https://github.com/fwcd/kotlin-language-server/blob/master/BUILDING.md
 " Not ready, though.
-" let g:LanguageClient_serverCommands = {
-"    \ 'kotlin': [expand("~/.config/nvim/server/bin/kotlin-language-server")],
-"    \ }
+ let g:LanguageClient_serverCommands = {
+    \ 'kotlin': [expand("~/.config/nvim/server/bin/kotlin-language-server")],
+    \ }
 
 autocmd VimEnter * call StartUp()
 
@@ -130,7 +130,7 @@ cmap w!! w !sudo tee % >/dev/null
 filetype plugin indent on    " required
 
 let g:deoplete#enable_at_startup = 1
-let g:neosnippet#enable_completed_snippet = 1
+" let g:neosnippet#enable_completed_snippet = 1
 
 "if !exists('g:deoplete#omni#input_patterns')
 " let g:deoplete#omni#input_patterns = {}
