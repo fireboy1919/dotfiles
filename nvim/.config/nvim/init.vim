@@ -35,10 +35,10 @@ Plug 'ryanoasis/vim-devicons'
 "Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
 "  Using vim-rooter instead.
 " Plugin 'amiorin/vim-project'
-Plug 'svermeulen/vim-easyclip'
+"Plug 'svermeulen/vim-easyclip'
 Plug 'ctrlpvim/ctrlp.vim'
 " Generates tag files to use with ctrlp; requires ctag to be installed.
-Plug 'ludovicchabant/vim-gutentags'
+" Plug 'ludovicchabant/vim-gutentags'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'christoomey/vim-tmux-navigator'
@@ -112,6 +112,7 @@ set guicursor=
 autocmd OptionSet guicursor noautocmd set guicursor=
 let g:Guifont='Hack Regular Nerd Font Complete 12'
 let g:airline_powerline_fonts = 1
+"let g:deoplete#num_processes = 1
 set clipboard=unnamed,unnamedplus
 
 set tags+=gems.tags

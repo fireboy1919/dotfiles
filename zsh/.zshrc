@@ -73,7 +73,7 @@ ENABLE_CORRECTION="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git zshmarks kubectl docker docker-compose git-auto-fetch terraform aws last-working-dir zsh-completions
+  git zshmarks kubectl docker docker-compose git-auto-fetch terraform aws last-working-dir zsh-completions dotenv
   )
 
 source $ZSH/oh-my-zsh.sh
@@ -87,9 +87,9 @@ source $ZSH/oh-my-zsh.sh
 
 # Preferred editor for local and remote sessions
  if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR='vim'
+   export EDITOR='vi'
  else
-   export EDITOR='vim'
+   export EDITOR='vi'
  fi
 
 # Compilation flags
@@ -104,14 +104,15 @@ source $ZSH/oh-my-zsh.sh
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+# alias zshconfig="mate ~/.zshrc"
+alias vim=vi
 export AWS_CBOR_DISABLE=1
 #PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[green]%} %~%{$reset_color%}  |$(git_prompt_info)> '
 
 
-export AWS_REGION=us-east-1
-export AWS_DEFAULT_REGION=us-east-1
+#export AWS_REGION=us-east-1
+#export AWS_DEFAULT_REGION=us-east-1
 
 # Something is setting this automatically.  I can't find it.
 unset AWS_SECRET_ACCESS_KEY
@@ -122,8 +123,59 @@ alias s="bookmark"
 alias d="deletemark"
 alias p="showmarks"
 alias l="showmarks"
-alias assume-role='function(){eval $(command ~/go/bin/assume-role $@);}'
 alias tmux='tmux -u'
+alias assume-role='assumerole'
+
+#alias  `aws-google-auth -u rusty.phillips@flexengage.com -p dev -I C01pojxkm -S 216509506152 --print-creds -d 28800`
+#alias login-`aws-google-auth -u rusty.phillips@flexengage.com -p dev -I C01pojxkm -S 216509506152 --print-creds -d 28800`
+
+ST=/usr/bin/secret-tool
+LOGIN="google-login"
+LABEL="Login for Google Suite"
+GOOGLE_AUTH="aws-google-auth"
+GOOGLE_USER="rusty.phillips@flexengage.com"
+
+alias kdev="kenv dev"
+alias ktest="kenv test"
+alias kprod="kenv prod"
+
+kenv() {
+  PROFILE="$1"
+  awslogin $PROFILE
+  shift
+  kubectl --context $PROFILE-aws "$@"
+}
+
+assumerole() {
+  # By default, if it already exists, it doesn't set it.
+  unset $(printenv | sed 's;=.*;;' | grep AWS) || 0
+  eval $(command ~/go/bin/assume-role $@ )
+}
+
+awslogin() {
+  PROFILE=$1
+  case $PROFILE in
+    "dev")
+      ROLE="arn:aws:iam::048502202118:role/google-idp-admin"
+      ;;
+    "test")
+      ROLE="arn:aws:iam::032946347770:role/google-idp-admin"
+      ;;
+    "sandbox")
+      ROLE="arn:aws:iam::167287004810:role/google-idp-admin"
+      ;;
+    "prod")
+      ROLE="arn:aws:iam::450266734631:role/google-idp-read-only"
+      ;;
+    "internal")
+      ROLE="arn:aws:iam::209987143508:role/google-idp-admin"
+      ;;
+  esac
+    
+  $GOOGLE_AUTH -u $GOOGLE_USER -R 'us-east-1' -I C01pojxkm -S 216509506152 -d 28800 -k -p $PROFILE -r $ROLE
+  assume-role $PROFILE
+
+}
 
 rabbitmq() {
   zparseopts -D -E -- k=kill r=restart
@@ -186,8 +238,6 @@ portainer() {
   fi
 }
 
-
-
 kubedash() {
   zparseopts -D -E -- k=kill r=restart
   [ -n "${kill}" -o -n "$restart" ] && pkill -f 'kubectl proxy'
@@ -206,3 +256,5 @@ kubedash() {
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/home/rustyphillips/.sdkman"
 [[ -s "/home/rustyphillips/.sdkman/bin/sdkman-init.sh" ]] && source "/home/rustyphillips/.sdkman/bin/sdkman-init.sh"
+
+compdef kenv=kubectl
