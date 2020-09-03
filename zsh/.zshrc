@@ -4,6 +4,11 @@
 # Path to your oh-my-zsh installation.
 export ZSH="/home/rustyphillips/.oh-my-zsh"
 export JAVA_HOME=$(update-alternatives --query javac | sed -n -e 's/Best: *\(.*\)\/bin\/javac/\1/p')
+export KUBE_EDITOR=nvim 
+
+alias jdk8='export JAVA_HOME=/usr/lib/jvm/java-8-oracle'
+alias jdk11='export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64'
+alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
 DEFAULT_USER=rustyphillips
 prompt_context(){}
@@ -14,7 +19,8 @@ ZSH_THEME="agnoster"
 
 SAVEHIST=1000000
 setopt HIST_IGNORE_DUPS
-
+alias vim=nvim
+alias vi=nvim
 precmd() {
   setxkbmap -option caps:none
   xmodmap ~/.Xmodmap 2&>/dev/null
@@ -106,7 +112,6 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # alias zshconfig="mate ~/.zshrc"
-alias vim=vi
 export AWS_CBOR_DISABLE=1
 #PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[green]%} %~%{$reset_color%}  |$(git_prompt_info)> '
 
@@ -132,7 +137,7 @@ alias assume-role='assumerole'
 ST=/usr/bin/secret-tool
 LOGIN="google-login"
 LABEL="Login for Google Suite"
-GOOGLE_AUTH="aws-google-auth"
+GOOGLE_AUTH="/usr/local/bin/gsts"
 GOOGLE_USER="rusty.phillips@flexengage.com"
 
 alias kdev="kenv dev"
@@ -172,8 +177,11 @@ awslogin() {
       ;;
   esac
     
-  $GOOGLE_AUTH -u $GOOGLE_USER -R 'us-east-1' -I C01pojxkm -S 216509506152 -d 28800 -k -p $PROFILE -r $ROLE
-  assume-role $PROFILE
+  echo "$GOOGLE_AUTH --username $GOOGLE_USER --idp-id C01pojxkm --sp-id 216509506152 --aws-profile $PROFILE --aws-role-arn $ROLE"
+  $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE
+  assume-role $PROFILE 
+  export AWS_REGION=us-east-1
+  export AWS_DEFAULT_REGION=us-east-1
 
 }
 
@@ -211,11 +219,32 @@ localstack() {
         echo "Localstack already started."
       fi
     else
-      echo "Starting Localstack"
-      docker run --name=localstack -it -d -p 4567-4578:4567-4578 -e SERVICES='kinesis,dynamodb,s3,sqs,sns,ses' localstack/localstack 
+      echo "Starting Localstack:latest"
+      docker run --name=localstack -it -d -p 4566-4578:4566-4578 -p 8055:8055 -e AWS_REGION='us-east-1' -e DEFAULT_REGION='us-east-1' -e SERVICES='kinesis,dynamodb,s3,sqs,sns,ses' -e PORT_WEB_UI=8055 localstack/localstack:latest
       echo "Localstack started."
     fi
   fi
+}
+
+plantuml() {
+  zparseopts -D -E -- k=kill r=restart
+  [ -n "${kill}" -o -n "$restart" ] && echo "Stopping plantuml" && docker stop portainer>/dev/null && echo "PlantUML stopped."
+  if [ -n "${restart}" -o -z "${kill}" ]; then
+    if [ "$(docker ps -aq -f name=plantuml)" ]; then
+      if [ "$(docker ps -aq -f status=exited -f name=plantuml)" ]; then
+        echo "Starting plantuml server"
+        docker start plantuml
+        echo "PlantUML started"
+      else
+        echo "PlantUML already started."
+      fi
+    else
+      echo "Starting plantuml-server"
+        docker run -d -p 9999:8080 --name plantuml plantuml/plantuml-server:jetty
+      echo "PlantUML-server started"
+    fi
+  fi
+
 }
 
 portainer() {
@@ -238,6 +267,7 @@ portainer() {
   fi
 }
 
+
 kubedash() {
   zparseopts -D -E -- k=kill r=restart
   [ -n "${kill}" -o -n "$restart" ] && pkill -f 'kubectl proxy'
@@ -257,4 +287,3 @@ kubedash() {
 export SDKMAN_DIR="/home/rustyphillips/.sdkman"
 [[ -s "/home/rustyphillips/.sdkman/bin/sdkman-init.sh" ]] && source "/home/rustyphillips/.sdkman/bin/sdkman-init.sh"
 
-compdef kenv=kubectl
