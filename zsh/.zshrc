@@ -29,8 +29,12 @@ PURE_POWER_MODE=modern
 
 SAVEHIST=1000000
 setopt HIST_IGNORE_DUPS
-alias vim=nvim
-alias vi=nvim
+if command -v nvim &> /dev/null
+then
+  alias vim=nvim
+  alias vi=nvim
+fi
+
 precmd() {
   if command -v setxkbmap &> /dev/null
   then
