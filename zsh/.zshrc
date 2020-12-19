@@ -32,8 +32,14 @@ setopt HIST_IGNORE_DUPS
 alias vim=nvim
 alias vi=nvim
 precmd() {
-  setxkbmap -option caps:none
-  xmodmap ~/.Xmodmap 2&>/dev/null
+  if command -v setxkbmap &> /dev/null
+  then
+    setxkbmap -option caps:none
+  fi
+  if command -v xmodmap &> /dev/null
+  then
+    xmodmap ~/.Xmodmap 2&>/dev/null
+  fi
 }
 
 # Set list of themes to load
