@@ -1,21 +1,33 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+export PATH=$PATH:~/.kube/plugins/jordanwilson230
 # Path to your oh-my-zsh installation.
-export ZSH="/home/rustyphillips/.oh-my-zsh"
+#export ZSH="/home/rustyphillips/.oh-my-zsh"
 export JAVA_HOME=$(update-alternatives --query javac | sed -n -e 's/Best: *\(.*\)\/bin\/javac/\1/p')
 export KUBE_EDITOR=nvim 
 
-alias jdk8='export JAVA_HOME=/usr/lib/jvm/java-8-oracle'
-alias jdk11='export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64'
+alias jdk7='sdk u java 7.0.21-open'
+alias jdk8='sdk u java 8.0.265-open'
+alias jdk11='sdk u java 11.0.2-open'
 alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+# prompt_context(){}
+
 DEFAULT_USER=rustyphillips
-prompt_context(){}
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="agnoster"
+#ZSH_THEME="gruvbox"
+#SOLARIZED_THEME="dark"
+PURE_POWER_MODE=modern   
 
 SAVEHIST=1000000
 setopt HIST_IGNORE_DUPS
@@ -78,11 +90,9 @@ ENABLE_CORRECTION="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(
-  git zshmarks kubectl docker docker-compose git-auto-fetch terraform aws last-working-dir zsh-completions dotenv
-  )
-
-source $ZSH/oh-my-zsh.sh
+#plugins=(
+#  git zshmarks kubectl docker docker-compose git-auto-fetch terraform aws last-working-dir zsh-completions dotenv zsh-sdkman
+#  )
 
 # User configuration
 
@@ -159,27 +169,31 @@ assumerole() {
 
 awslogin() {
   PROFILE=$1
-  case $PROFILE in
-    "dev")
-      ROLE="arn:aws:iam::048502202118:role/google-idp-admin"
-      ;;
-    "test")
-      ROLE="arn:aws:iam::032946347770:role/google-idp-admin"
-      ;;
-    "sandbox")
-      ROLE="arn:aws:iam::167287004810:role/google-idp-admin"
-      ;;
-    "prod")
-      ROLE="arn:aws:iam::450266734631:role/google-idp-read-only"
-      ;;
-    "internal")
-      ROLE="arn:aws:iam::209987143508:role/google-idp-admin"
-      ;;
-  esac
-    
-  echo "$GOOGLE_AUTH --username $GOOGLE_USER --idp-id C01pojxkm --sp-id 216509506152 --aws-profile $PROFILE --aws-role-arn $ROLE"
-  $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE
-  assume-role $PROFILE 
+  if [ $PROFILE != "prod" ]
+  then
+
+    case $PROFILE in
+      "dev")
+        ROLE="arn:aws:iam::048502202118:role/google-idp-admin"
+        ;;
+      "test")
+        ROLE="arn:aws:iam::032946347770:role/google-idp-admin"
+        ;;
+      "sandbox")
+        ROLE="arn:aws:iam::167287004810:role/google-idp-admin"
+        ;;
+      "prod")
+        ROLE="arn:aws:iam::450266734631:role/google-idp-read-only"
+        ;;
+      "internal")
+        ROLE="arn:aws:iam::209987143508:role/google-idp-admin"
+        ;;
+    esac
+
+    echo "$GOOGLE_AUTH --username $GOOGLE_USER --idp-id C01pojxkm --sp-id 216509506152 --aws-profile $PROFILE --aws-role-arn $ROLE"
+    $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE
+  fi
+  assumerole $PROFILE 
   export AWS_REGION=us-east-1
   export AWS_DEFAULT_REGION=us-east-1
 
@@ -220,7 +234,7 @@ localstack() {
       fi
     else
       echo "Starting Localstack:latest"
-      docker run --name=localstack -it -d -p 4566-4578:4566-4578 -p 8055:8055 -e AWS_REGION='us-east-1' -e DEFAULT_REGION='us-east-1' -e SERVICES='kinesis,dynamodb,s3,sqs,sns,ses' -e PORT_WEB_UI=8055 localstack/localstack:latest
+      docker run --name=localstack -it -d -p 4566-4578:4566-4578 -p 8055:8055 -e AWS_REGION='us-east-1' -e DEFAULT_REGION='us-east-1' -e SERVICES='kinesis,dynamodb,s3,sqs,sns,ses' -e PORT_WEB_UI=8055 localstack/localstack:0.10.8
       echo "Localstack started."
     fi
   fi
@@ -283,7 +297,51 @@ kubedash() {
   fi
 }
 
+### Added by Zinit's installer
+if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
+    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
+    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+        print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
+        print -P "%F{160}▓▒░ The clone has failed.%f%b"
+fi
+
+source "$HOME/.zinit/bin/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+# Load a few important annexes, without Turbo
+# (this is currently required for annexes)
+zinit light-mode for \
+    zinit-zsh/z-a-rust \
+    zinit-zsh/z-a-as-monitor \
+    zinit-zsh/z-a-patch-dl \
+    zinit-zsh/z-a-bin-gem-node
+
+### End of Zinit's installer chunk
+#
+zinit ice depth=1; zinit light romkatv/powerlevel10k
+zinit snippet https://github.com/sainnhe/dotfiles/raw/master/.zsh-theme-gruvbox-material-dark
+zinit wait lucid atload"zicompinit; zicdreplay" blockf for \
+    zsh-users/zsh-completions
+
+zinit wait lucid for \
+  OMZP::docker/_docker \
+  OMZL::git.zsh \
+  OMZP::git \
+  jocelynmallon/zshmarks \
+  OMZP::kubectl \
+  OMZP::docker-compose \
+  OMZP::git-auto-fetch \
+  OMZP::last-working-dir \
+  matthieusb/zsh-sdkman \
+  OMZP::dotenv
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/home/rustyphillips/.sdkman"
 [[ -s "/home/rustyphillips/.sdkman/bin/sdkman-init.sh" ]] && source "/home/rustyphillips/.sdkman/bin/sdkman-init.sh"
+
 
