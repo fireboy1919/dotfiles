@@ -4,8 +4,6 @@
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export PATH=$PATH:~/.kube/plugins/jordanwilson230
 # Path to your oh-my-zsh installation.
-#export ZSH="/home/rustyphillips/.oh-my-zsh"
-export JAVA_HOME=$(update-alternatives --query javac | sed -n -e 's/Best: *\(.*\)\/bin\/javac/\1/p')
 export KUBE_EDITOR=nvim 
 
 alias jdk7='sdk u java 7.0.21-open'
@@ -90,10 +88,6 @@ ENABLE_CORRECTION="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-#plugins=(
-#  git zshmarks kubectl docker docker-compose git-auto-fetch terraform aws last-working-dir zsh-completions dotenv zsh-sdkman
-#  )
-
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -334,14 +328,15 @@ zinit wait lucid for \
   OMZP::docker-compose \
   OMZP::git-auto-fetch \
   OMZP::last-working-dir \
-  matthieusb/zsh-sdkman \
   OMZP::dotenv
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-export SDKMAN_DIR="/home/rustyphillips/.sdkman"
-[[ -s "/home/rustyphillips/.sdkman/bin/sdkman-init.sh" ]] && source "/home/rustyphillips/.sdkman/bin/sdkman-init.sh"
-
+if [[ ! -f $HOME/.sdkman/bin/sdkman-init ]]; then
+  zinit wait lucid for matthieusb/zsh-sdkman
+  export SDKMAN_DIR="$HOME/.sdkman"
+  [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+fi 
 
