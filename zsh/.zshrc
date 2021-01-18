@@ -27,8 +27,18 @@ DEFAULT_USER=rustyphillips
 #SOLARIZED_THEME="dark"
 PURE_POWER_MODE=modern   
 
+HISTFILE=~/.zsh_history
 SAVEHIST=1000000
 setopt HIST_IGNORE_DUPS
+setopt SHARE_HISTORY
+# Cycle through history based on characters already typed on the line
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "$key[Up]" up-line-or-beginning-search
+bindkey "$key[Down]" down-line-or-beginning-search
+
 if command -v nvim &> /dev/null
 then
   alias vim=nvim
@@ -137,7 +147,7 @@ export AWS_CBOR_DISABLE=1
 unset AWS_SECRET_ACCESS_KEY
 unset AWS_ACCESS_KEY_ID
 
-alias g="jump"
+alias j="jump"
 alias s="bookmark"
 alias d="deletemark"
 alias p="showmarks"
@@ -197,6 +207,7 @@ awslogin() {
     echo "$GOOGLE_AUTH --username $GOOGLE_USER --idp-id C01pojxkm --sp-id 216509506152 --aws-profile $PROFILE --aws-role-arn $ROLE"
     $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE
   fi
+  kubectx $PROFILE-aws
   assumerole $PROFILE 
   export AWS_REGION=us-east-1
   export AWS_DEFAULT_REGION=us-east-1
@@ -334,6 +345,7 @@ zinit wait lucid for \
   OMZL::git.zsh \
   OMZP::git \
   jocelynmallon/zshmarks \
+  zsh-users/zsh-autosuggestions \
   OMZP::kubectl \
   OMZP::docker-compose \
   OMZP::git-auto-fetch \
@@ -344,7 +356,7 @@ zinit wait lucid for \
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-if [[ ! -f $HOME/.sdkman/bin/sdkman-init ]]; then
+if [[ -f $HOME/.sdkman/bin/sdkman-init.sh ]]; then
   zinit wait lucid for matthieusb/zsh-sdkman
   export SDKMAN_DIR="$HOME/.sdkman"
   [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
