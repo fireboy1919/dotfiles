@@ -55,9 +55,13 @@ Plug 'justone/remotecopy'
 " Plug 'leafgarland/typescript-vim'
 "Plug 'Quramy/tsuquyomi'
 Plug 'suan/vim-instant-markdown'
-Plug 'majutsushi/tagbar'
+"Plug 'majutsushi/tagbar'
+Plug 'liuchengxu/vista.vim'
+
+Plug 'jreybert/vimagit'
 "Plug 'wokalski/autocomplete-flow', { 'do': 'npm install -g flow-bin' }
 " For func argument completion
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'Shougo/neosnippet'
 Plug 'Shougo/neosnippet-snippets'
 "Plug 'w0rp/ale', { 'do': 'npm install -g prettier-standard' }
@@ -65,7 +69,32 @@ Plug 'Shougo/neosnippet-snippets'
 "Plug 'morhertz/gruvbox'
 Plug 'overcache/NeoSolarized'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'itchyny/lightline.vim'
 
+" Tag Settings:
+let g:vista#renderer#enable_icon = 1
+let g:vista#finders = ['fzf']
+let g:vista_default_executive = 'coc'
+let g:vista_fzf_preview = []
+let g:vista_log_file = expand('~/vista.log')
+
+function! NearestMethodOrFunction() abort
+  return get(b:, 'vista_nearest_method_or_function', '')
+endfunction
+
+"set statusline+=%{NearestMethodOrFunction()}
+autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+" Status line from vista
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'readonly', 'filename', 'modified', 'method' ] ]
+      \ },
+      \ 'component_function': {
+      \   'method': 'NearestMethodOrFunction'
+      \ },
+      \ }
 
 "" BEGIN COC settings:
 " TextEdit might fail if hidden is not set.
@@ -202,7 +231,7 @@ command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organize
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+"set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Mappings for CoCList
 " Show all diagnostics.
@@ -247,7 +276,6 @@ set cmdheight=2
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'signature'
 " (Optional) Multi-entry selection UI.
-Plug 'junegunn/fzf'
 call plug#end()
 
 if plug_install
@@ -494,7 +522,8 @@ let g:rails_default_file='config/database.yml'
 " toggle nerdtree
 map <F5> :NERDTreeToggle <cr>
 " toggle taglist
-map <F6> :TagbarToggle<CR>
+"map <F6> :TagbarToggle<CR>
+map <F6> :Vista!!<CR>
 "map <F6> :TlistToggle <cr>
 
 

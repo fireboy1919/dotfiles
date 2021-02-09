@@ -29,6 +29,8 @@ PURE_POWER_MODE=modern
 
 HISTFILE=~/.zsh_history
 SAVEHIST=1000000
+HISTSIZE=1000000
+
 setopt HIST_IGNORE_DUPS
 setopt SHARE_HISTORY
 # Cycle through history based on characters already typed on the line
