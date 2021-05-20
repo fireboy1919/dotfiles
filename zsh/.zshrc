@@ -217,6 +217,7 @@ awslogin() {
 }
 
 k9() {
+  env=$1
   awslogin $env
   k9s --context $env-aws
 }
