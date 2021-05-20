@@ -8,8 +8,8 @@ export KUBE_EDITOR=nvim
 
 alias jdk7='sdk u java 7.0.21-open'
 alias jdk8='sdk u java 8.0.265-open'
-alias jdk11='sdk u java 11.0.2-open'
-alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
+alias jdk11='sdk u java 11.0.10-open'
+#alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -216,6 +216,11 @@ awslogin() {
 
 }
 
+k9() {
+  awslogin $env
+  k9s --context $env-aws
+}
+
 rabbitmq() {
   zparseopts -D -E -- k=kill r=restart
   [ -n "${kill}" -o -n "$restart" ] && echo "Stopping rabbitmq" && docker stop rabbit >/dev/null && echo "RabbitMQ stopped."
@@ -250,8 +255,8 @@ localstack() {
         echo "Localstack already started."
       fi
     else
-      echo "Starting Localstack:latest"
-      docker run --name=localstack -it -d -p 4566-4578:4566-4578 -p 8055:8055 -e AWS_REGION='us-east-1' -e DEFAULT_REGION='us-east-1' -e SERVICES='kinesis,dynamodb,s3,sqs,sns,ses' -e PORT_WEB_UI=8055 localstack/localstack:0.10.8
+      echo "Starting Localstack with HOSTNAME_EXTERNAL=localstack"
+      docker run --name=localstack -it -d -p 4566-4578:4566-4578 -p 8055:8055 -e AWS_REGION='us-east-1' -e DEFAULT_REGION='us-east-1' -e HOSTNAME_EXTERNAL=localstack -e SERVICES='kinesis,dynamodb,s3,sqs,sns,ses' -e PORT_WEB_UI=8055 localstack/localstack:0.10.8
       echo "Localstack started."
     fi
   fi
@@ -354,13 +359,20 @@ zinit wait lucid for \
   OMZP::last-working-dir \
   OMZP::dotenv
 
+# Adding sdkman
+zplugin ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
+  atclone"wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
+  atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
+  atinit"SDKMAN_DIR=$ZPFX/sdkman source $ZPFX/sdkman/bin/sdkman-init.sh"
+zplugin light zdharma/null
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-if [[ -f $HOME/.sdkman/bin/sdkman-init.sh ]]; then
-  zinit wait lucid for matthieusb/zsh-sdkman
-  export SDKMAN_DIR="$HOME/.sdkman"
-  [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-fi 
+#if [[ -f $HOME/.sdkman/bin/sdkman-init.sh ]]; then
+#  zinit wait lucid for matthieusb/zsh-sdkman
+#  export SDKMAN_DIR="$HOME/.sdkman"
+#  [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+#fi 
 
