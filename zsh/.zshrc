@@ -368,11 +368,3 @@ zplugin light zdharma/null
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
-#if [[ -f $HOME/.sdkman/bin/sdkman-init.sh ]]; then
-#  zinit wait lucid for matthieusb/zsh-sdkman
-#  export SDKMAN_DIR="$HOME/.sdkman"
-#  [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-#fi 
-
