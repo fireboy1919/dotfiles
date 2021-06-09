@@ -217,7 +217,7 @@ awslogin() {
 }
 
 k9() {
-  env=$1
+  env="$1"
   awslogin $env
   k9s --context $env-aws
 }
@@ -257,7 +257,7 @@ localstack() {
       fi
     else
       echo "Starting Localstack with HOSTNAME_EXTERNAL=localstack"
-      docker run --name=localstack -it -d -p 4566-4578:4566-4578 -p 8055:8055 -e AWS_REGION='us-east-1' -e DEFAULT_REGION='us-east-1' -e HOSTNAME_EXTERNAL=localstack -e SERVICES='kinesis,dynamodb,s3,sqs,sns,ses' -e PORT_WEB_UI=8055 localstack/localstack:0.10.8
+      docker run --name=localstack -it -d -p 4566-4583:4566-4583 -p 8055:8055 -e AWS_REGION='us-east-1' -e DEFAULT_REGION='us-east-1' -e HOSTNAME_EXTERNAL=localstack -e SERVICES='kinesis,dynamodb,s3,sqs,sns,ses,ssm' -e PORT_WEB_UI=8055 localstack/localstack:0.10.8
       echo "Localstack started."
     fi
   fi
