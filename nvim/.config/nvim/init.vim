@@ -30,13 +30,11 @@ Plug 'tpope/vim-rails'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-bundler'
 Plug 'tpope/vim-sleuth'
-Plug 'ryanoasis/vim-devicons'
 "Plug 'vim-ruby/vim-ruby'
 "Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
 "  Using vim-rooter instead.
 " Plugin 'amiorin/vim-project'
 "Plug 'svermeulen/vim-easyclip'
-Plug 'ctrlpvim/ctrlp.vim'
 " Generates tag files to use with ctrlp; requires ctag to be installed.
 " Plug 'ludovicchabant/vim-gutentags'
 Plug 'scrooloose/nerdcommenter'
@@ -69,7 +67,18 @@ Plug 'Shougo/neosnippet-snippets'
 "Plug 'morhertz/gruvbox'
 Plug 'overcache/NeoSolarized'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'itchyny/lightline.vim'
+Plug 'liuchengxu/eleline.vim'
+Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
+Plug 'kristijanhusak/vim-create-pr'
+Plug 'ryanoasis/vim-devicons'
+
+Plug 'sharkdp/fd'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzy-native.nvim'
+
+" Chadtree:
+"let g:chadtree_settings = {'theme': { 'icon_glyph_set': true } }
 
 " Tag Settings:
 let g:vista#renderer#enable_icon = 1
@@ -78,23 +87,45 @@ let g:vista_default_executive = 'coc'
 let g:vista_fzf_preview = []
 let g:vista_log_file = expand('~/vista.log')
 
+
+
 function! NearestMethodOrFunction() abort
-  return get(b:, 'vista_nearest_method_or_function', '')
+  return exists('b:vista_nearest_method_or_function') ? b:vista_nearest_method_or_function : ''
 endfunction
 
-"set statusline+=%{NearestMethodOrFunction()}
+set statusline+=%{NearestMethodOrFunction()}
 autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+"set statusline+=%{NearestMethodOrFunction()}
+"autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 " Status line from vista
-let g:lightline = {
-      \ 'colorscheme': 'wombat',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'readonly', 'filename', 'modified', 'method' ] ]
-      \ },
-      \ 'component_function': {
-      \   'method': 'NearestMethodOrFunction'
-      \ },
-      \ }
+"let g:lightline = {
+      "\ 'colorscheme': 'wombat',
+      "\ 'active': {
+      "\   'left': [ [ 'mode', 'paste' ],
+      "\             [ 'readonly', 'filename', 'modified', 'method' ] ]
+      "\ },
+      "\ 'component_function': {
+      "\   'method': 'NearestMethodOrFunction'
+      "\ },
+      "\ }
+
+" lightline Coc
+"function! CocCurrentFunction()
+    "return get(b:, 'coc_current_function', '')
+"endfunction
+
+"let g:lightline = {
+      "\ 'colorscheme': 'wombat',
+      "\ 'active': {
+      "\   'left': [ [ 'mode', 'paste' ],
+      "\             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
+      "\ },
+      "\ 'component_function': {
+      "\   'cocstatus': 'coc#status',
+      "\   'currentfunction': 'CocCurrentFunction'
+      "\ },
+      "\ }
+
 
 "" BEGIN COC settings:
 " TextEdit might fail if hidden is not set.
@@ -370,19 +401,27 @@ let g:project_use_nerdtree = 1
 
 :let mapleader = "."
 " Git shortcuts
-map <leader>gb :Gblame<CR>
-map <leader>gs :Gstatus<CR>
+map <leader>gb :Git blame<CR>
+map <leader>gs :Git<CR>
 map <leader>gd :Gdiff<CR>
-map <leader>gl :Glog<CR>
-map <leader>gc :Gcommit<CR>
-map <leader>gp :Gpush<CR>
+map <leader>gl :Gclog<CR>
+map <leader>gc :Git commit<CR>
+map <leader>gp :Git push<CR>
+set diffopt+=vertical
 
+" Finder plugin:
+"Plug 'ctrlpvim/ctrlp.vim'
 " CtrlP shortcuts
-let g:ctrlp_extensions = ['buffertag', 'tag', 'line', 'dir']
-map <leader>f :CtrlPMixed<CR>
-map <leader>b :CtrlPBuffer<CR>
-map <leader>. :CtrlPTag<CR>
+"let g:ctrlp_extensions = ['buffertag', 'tag', 'line', 'dir']
+"map <leader>f :CtrlPMixed<CR>
+"map <leader>b :CtrlPBuffer<CR>
+"map <leader>. :CtrlPTag<CR>
 
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+nnoremap cb <cmd>Telescope git_branches<cr>
 
 " The Silver Searcher
 if executable('ag')
@@ -520,7 +559,10 @@ let g:rails_default_file='config/database.yml'
 "------------------------------------------------------------------------------
 
 " toggle nerdtree
-map <F5> :NERDTreeToggle <cr>
+"map <F5> :NERDTreeToggle <cr>
+"let NERDTreeQuitOnOpen=0
+"map <F5> :CocCommand explorer<cr>
+map <F5> :CHADopen<cr>
 " toggle taglist
 "map <F6> :TagbarToggle<CR>
 map <F6> :Vista!!<CR>
