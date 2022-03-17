@@ -40,13 +40,13 @@ Plug 'tpope/vim-sleuth'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-scripts/AnsiEsc.vim'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
+"Plug 'scrooloose/nerdtree'
+"Plug 'Xuyuanp/nerdtree-git-plugin'
 " Plug 'vim-syntastic/Syntastic'
 Plug 'airblade/vim-rooter'
 Plug 'sjl/splice.vim'
 " Plugin 'EasyGrep'
-Plug 'rking/ag.vim'
+"Plug 'rking/ag.vim'
 Plug 'Shougo/vimproc'
 " Plug 'Chiel92/vim-autoformat'
 Plug 'justone/remotecopy'
@@ -56,7 +56,7 @@ Plug 'suan/vim-instant-markdown'
 "Plug 'majutsushi/tagbar'
 Plug 'liuchengxu/vista.vim'
 
-Plug 'jreybert/vimagit'
+"Plug 'jreybert/vimagit'
 "Plug 'wokalski/autocomplete-flow', { 'do': 'npm install -g flow-bin' }
 " For func argument completion
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -74,8 +74,16 @@ Plug 'ryanoasis/vim-devicons'
 
 Plug 'sharkdp/fd'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
-Plug 'nvim-telescope/telescope-fzy-native.nvim'
+
+Plug 'puremourning/vimspector'
+
+"Plug 'neovim/nvim-lspconfig'
+"Plug 'williamboman/nvim-lsp-installer'
+"Plug 'RishabhRD/popfix'
+"Plug 'RishabhRD/nvim-lsputils'
+"Plug 'nvim-lua/lsp-status.nvim'
+"Plug 'mfussenegger/nvim-jdtls'
+"Plug 'beeender/comrade'
 
 " Chadtree:
 "let g:chadtree_settings = {'theme': { 'icon_glyph_set': true } }
@@ -87,7 +95,7 @@ let g:vista_default_executive = 'coc'
 let g:vista_fzf_preview = []
 let g:vista_log_file = expand('~/vista.log')
 
-
+let g:coc_global_extension = ['coc-java', 'coc-java-debug', 'coc-jedi', 'coc-sh', 'coc-markdown-preview-enhanced', 'coc-docker']
 
 function! NearestMethodOrFunction() abort
   return exists('b:vista_nearest_method_or_function') ? b:vista_nearest_method_or_function : ''
@@ -190,10 +198,10 @@ nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gd :Telescope coc definitions<CR>
+nmap <silent> gy :Telescope coc type_definitions<CR>
+nmap <silent> gi :Telescope coc implementations<CR>
+nmap <silent> gr :Telescope coc references<CR>
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -365,7 +373,7 @@ autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
 filetype plugin indent on  
 set omnifunc=syntaxcomplete#Complete<Paste>
-autocmd FileType java setlocal omnifunc=javacomplete#Complete
+"autocmd FileType java setlocal omnifunc=javacomplete#Complete
 
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#omni_patterns = {}
@@ -422,6 +430,7 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap cb <cmd>Telescope git_branches<cr>
+nnoremap <leader>fr <cmd>Telescope resume<cr>
 
 " The Silver Searcher
 if executable('ag')
@@ -691,3 +700,6 @@ endif
 " hi CocFloating guibg=none guifg=none.
 set background=dark
 colorscheme NeoSolarized
+
+lua require('config')
+
