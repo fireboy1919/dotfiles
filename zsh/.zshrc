@@ -6,9 +6,10 @@ export PATH=$PATH:~/.kube/plugins/jordanwilson230
 # Path to your oh-my-zsh installation.
 export KUBE_EDITOR=nvim 
 
-alias jdk7='sdk u java 7.0.21-open'
+alias jdk7='sdk u java 7.0.322-zulu'
 alias jdk8='sdk u java 8.0.265-open'
 alias jdk11='sdk u java 11.0.10-open'
+alias jdk17='sdk u java 17-open'
 #alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -322,9 +323,9 @@ kubedash() {
 
 ### Added by Zinit's installer
 if [[ ! -f $HOME/.zinit/bin/zinit.zsh ]]; then
-    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma/zinit%F{220})…%f"
+    print -P "%F{33}▓▒░ %F{220}Installing %F{33}DHARMA%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
     command mkdir -p "$HOME/.zinit" && command chmod g-rwX "$HOME/.zinit"
-    command git clone https://github.com/zdharma/zinit "$HOME/.zinit/bin" && \
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.zinit/bin" && \
         print -P "%F{33}▓▒░ %F{34}Installation successful.%f%b" || \
         print -P "%F{160}▓▒░ The clone has failed.%f%b"
 fi
@@ -336,10 +337,10 @@ autoload -Uz _zinit
 # Load a few important annexes, without Turbo
 # (this is currently required for annexes)
 zinit light-mode for \
-    zinit-zsh/z-a-rust \
-    zinit-zsh/z-a-as-monitor \
-    zinit-zsh/z-a-patch-dl \
-    zinit-zsh/z-a-bin-gem-node
+    zdharma-continuum/z-a-rust \
+    zdharma-continuum/z-a-as-monitor \
+    zdharma-continuum/z-a-patch-dl \
+    zdharma-continuum/z-a-bin-gem-node
 
 ### End of Zinit's installer chunk
 #
@@ -354,18 +355,20 @@ zinit wait lucid for \
   OMZP::git \
   jocelynmallon/zshmarks \
   zsh-users/zsh-autosuggestions \
+  OMZP::vi-mode \
   OMZP::kubectl \
   OMZP::docker-compose \
   OMZP::git-auto-fetch \
   OMZP::last-working-dir \
-  OMZP::dotenv
+  OMZP::dotenv \
+  lukechilds/zsh-nvm
 
 # Adding sdkman
 zplugin ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
   atclone"wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
   atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
   atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
-zplugin light zdharma/null
+zplugin light zdharma-continuum/null
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
