@@ -345,7 +345,7 @@ zinit light-mode for \
 ### End of Zinit's installer chunk
 #
 zinit ice depth=1; zinit light romkatv/powerlevel10k
-zinit snippet https://github.com/sainnhe/dotfiles/raw/master/.zsh-theme-gruvbox-material-dark
+zinit snippet https://raw.githubusercontent.com/sainnhe/dotfiles/master/.zsh-theme/gruvbox-material-dark.zsh
 zinit wait lucid atload"zicompinit; zicdreplay" blockf for \
     zsh-users/zsh-completions
 
