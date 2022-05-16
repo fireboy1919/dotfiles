@@ -7,9 +7,9 @@ export PATH=$PATH:~/.kube/plugins/jordanwilson230
 export KUBE_EDITOR=nvim 
 
 alias jdk7='sdk u java 7.0.322-zulu'
-alias jdk8='sdk u java 8.0.265-open'
-alias jdk11='sdk u java 11.0.10-open'
-alias jdk17='sdk u java 17-open'
+alias jdk8='sdk u java8.0.332-zulu'
+alias jdk11='sdk u java 11.0.15-zulu'
+alias jdk18='sdk u java 18-amzn'
 #alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
