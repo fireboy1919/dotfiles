@@ -1,23 +1,25 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-export PATH=$PATH:~/.kube/plugins/jordanwilson230
+export PATH=$PATH:~/.kube/plugins/jordanwilson230:~/.local/bin
 # Path to your oh-my-zsh installation.
 export KUBE_EDITOR=nvim 
 
 alias jdk7='sdk u java 7.0.322-zulu'
-alias jdk8='sdk u java8.0.332-zulu'
+alias jdk8='sdk u java 8.0.332-zulu'
 alias jdk11='sdk u java 11.0.15-zulu'
 alias jdk18='sdk u java 18-amzn'
+alias lsc='ls -lrhtG'
 #alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
+
+path+=(/opt/homebrew/bin)
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+#fi
 # prompt_context(){}
 
 DEFAULT_USER=rustyphillips
@@ -156,7 +158,6 @@ alias d="deletemark"
 alias p="showmarks"
 alias l="showmarks"
 alias tmux='tmux -u'
-alias assume-role='assumerole'
 
 #alias  `aws-google-auth -u rusty.phillips@flexengage.com -p dev -I C01pojxkm -S 216509506152 --print-creds -d 28800`
 #alias login-`aws-google-auth -u rusty.phillips@flexengage.com -p dev -I C01pojxkm -S 216509506152 --print-creds -d 28800`
@@ -164,7 +165,7 @@ alias assume-role='assumerole'
 ST=/usr/bin/secret-tool
 LOGIN="google-login"
 LABEL="Login for Google Suite"
-GOOGLE_AUTH="/usr/local/bin/gsts"
+GOOGLE_AUTH="/opt/homebrew/bin/gsts"
 GOOGLE_USER="rusty.phillips@flexengage.com"
 
 alias kdev="kenv dev"
@@ -176,12 +177,6 @@ kenv() {
   awslogin $PROFILE
   shift
   kubectl --context $PROFILE-aws "$@"
-}
-
-assumerole() {
-  # By default, if it already exists, it doesn't set it.
-  unset $(printenv | sed 's;=.*;;' | grep AWS) || 0
-  eval $(command ~/go/bin/assume-role $@ )
 }
 
 awslogin() {
@@ -211,8 +206,8 @@ awslogin() {
     $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE
   fi
   kubectx $PROFILE-aws
-  assumerole $PROFILE 
   export AWS_REGION=us-east-1
+  export AWS_PROFILE=$PROFILE
   export AWS_DEFAULT_REGION=us-east-1
 
 }
@@ -359,16 +354,37 @@ zinit wait lucid for \
   OMZP::kubectl \
   OMZP::docker-compose \
   OMZP::git-auto-fetch \
-  OMZP::last-working-dir \
   OMZP::dotenv \
-  lukechilds/zsh-nvm
+  lukechilds/zsh-nvm \
+  OMZP::mvn  
+ # OMZP::last-working-dir
+
 
 # Adding sdkman
 zplugin ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
-  atclone"wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
+  atclone"/opt/homebrew/bin/wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
   atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
   atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
 zplugin light zdharma-continuum/null
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+###-begin-grond-completions-###
+#
+# yargs command completion script
+#
+# Installation: /opt/homebrew/bin/grond completion >> ~/.zshrc
+#    or /opt/homebrew/bin/grond completion >> ~/.zsh_profile on OSX.
+#
+_grond_yargs_completions()
+{
+  local reply
+  local si=$IFS
+  IFS=$'
+' reply=($(COMP_CWORD="$((CURRENT-1))" COMP_LINE="$BUFFER" COMP_POINT="$CURSOR" /opt/homebrew/bin/grond --get-yargs-completions "${words[@]}"))
+  IFS=$si
+  _describe 'values' reply
+}
+compdef _grond_yargs_completions grond
+###-end-grond-completions-###
+
