@@ -1,7 +1,8 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-export PATH=$PATH:~/.kube/plugins/jordanwilson230:~/.local/bin
+export PATH=/opt/homebrew/Cellar/helm@2/2.17.0/bin:/opt/homebrew/opt/terraform@0.12/bin:/opt/homebrew/bin:$PATH:~/.kube/plugins/jordanwilson230:~/.local/bin
+
 # Path to your oh-my-zsh installation.
 export KUBE_EDITOR=nvim 
 
@@ -10,9 +11,7 @@ alias jdk8='sdk u java 8.0.332-zulu'
 alias jdk11='sdk u java 11.0.15-zulu'
 alias jdk18='sdk u java 18-amzn'
 alias lsc='ls -lrhtG'
-#alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
-
-path+=(/opt/homebrew/bin)
+#.0.0:8080->8080/tcp                            flexreceipts-palias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -294,7 +293,7 @@ portainer() {
       fi
     else
       echo "Starting portainer"
-        docker run -d -p 9000:9000 --name portainer -v //var/run/docker.sock:/var/run/docker.sock -v portainer-data:/data portainer/portainer:latest
+        docker run -d -p 9000:9000 --name portainer -v /Users/rusty.phillips/.docker/run/docker.sock:/var/run/docker.sock -v portainer-data:/data portainer/portainer-ce:latest
       echo "Portainer started"
     fi
   fi

@@ -75,7 +75,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'sharkdp/fd'
 Plug 'nvim-lua/plenary.nvim'
 
-Plug 'puremourning/vimspector'
+"Plug 'puremourning/vimspector'
 
 "Plug 'neovim/nvim-lspconfig'
 "Plug 'williamboman/nvim-lsp-installer'
@@ -417,6 +417,8 @@ map <leader>gc :Git commit<CR>
 map <leader>gp :Git push<CR>
 set diffopt+=vertical
 
+map <leader>dp :diffput<CR>
+
 " Finder plugin:
 "Plug 'ctrlpvim/ctrlp.vim'
 " CtrlP shortcuts
@@ -431,18 +433,6 @@ nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 nnoremap cb <cmd>Telescope git_branches<cr>
 nnoremap <leader>fr <cmd>Telescope resume<cr>
-
-" The Silver Searcher
-if executable('ag')
-  " Use ag over grep
-  set grepprg=ag\ --nogroup\ --nocolor
-
-  " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
-  " ag is fast enough that CtrlP doesn't need to cache
-  let g:ctrlp_use_caching = 0
-endif
 
 "nnoremap <F10>j <c-w>j
 "nnoremap <F10>k <c-w>k

@@ -1,15 +1,18 @@
 [user]
 	email = rusty.phillips@flexreceipts.com
 	name = Rusty Phillips
+
 [merge] 
 	keepBackup = false
-	tool = p4merge 
-[mergetool] 
+	conflictstyle = diff3
+	tool = vim_mergetool
+
+[mergetool "vim_mergetool"] 
 	prompt=false 
-	cmd = p4merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED" 
+	cmd = nvim -f -c "MergetoolStart" "$MERGED" "$BASE" "$LOCAL" "$REMOTE" 
 	keepTemporaries = false 
 	trustExitCode = false 
-	keepBackup = false 
+
 [diff] 
 	tool = p4merge 
 
@@ -24,3 +27,5 @@
 [core]
 	autocrlf = input
 
+[init]
+	templatedir = ~/.git-templates

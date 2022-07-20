@@ -3,6 +3,11 @@ require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use 'nvim-telescope/telescope.nvim'
   use 'nvim-telescope/telescope-fzy-native.nvim'
+  use { 'samoshkin/vim-mergetool',
+    config = function() 
+      vim.g.mergetool_layout = 'LR,m'
+    end
+  }
   use { 'folke/which-key.nvim',
     config = function()
       require("which-key").setup {

@@ -13,6 +13,12 @@ require("telescope").setup {
     history = {
       path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
       limit = 100
+    },
+    mappings = {
+      i = {
+        ["<C-j>"] = "cycle_history_next",
+        ["<C-f>"] = "cycle_history_prev"
+      }
     }
   },
   extensions = {
