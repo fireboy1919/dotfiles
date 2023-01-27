@@ -68,8 +68,7 @@ Plug 'Shougo/neosnippet-snippets'
 Plug 'overcache/NeoSolarized'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'liuchengxu/eleline.vim'
-Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
-Plug 'kristijanhusak/vim-create-pr'
+"Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
 Plug 'ryanoasis/vim-devicons'
 
 Plug 'sharkdp/fd'
@@ -95,7 +94,17 @@ let g:vista_default_executive = 'coc'
 let g:vista_fzf_preview = []
 let g:vista_log_file = expand('~/vista.log')
 
-let g:coc_global_extension = ['coc-java', 'coc-java-debug', 'coc-jedi', 'coc-sh', 'coc-markdown-preview-enhanced', 'coc-docker']
+let g:coc_global_extensions = ['coc-java', 'coc-java-debug', 'coc-jedi', 'coc-sh', 'coc-markdown-preview-enhanced', 'coc-docker', 'coc-groovy']
+
+if isdirectory('./node_modules') && isdirectory('./node_modules/prettier')
+  let g:coc_global_extensions += ['coc-prettier']
+endif
+
+if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
+  let g:coc_global_extensions += ['coc-eslint']
+endif
+
+autocmd BufRead,BufNewFile Jenkinsfile set filetype=groovy
 
 function! NearestMethodOrFunction() abort
   return exists('b:vista_nearest_method_or_function') ? b:vista_nearest_method_or_function : ''
@@ -165,16 +174,18 @@ endif
 " Use tab for trigger completion with characters ahead and navigate.
 " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
 " other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-function! s:check_back_space() abort
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+function! CheckBackspace() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
+
 
 " Use <c-space> to trigger completion.
 if has('nvim')
@@ -201,7 +212,8 @@ nmap <silent> ]g <Plug>(coc-diagnostic-next)
 nmap <silent> gd :Telescope coc definitions<CR>
 nmap <silent> gy :Telescope coc type_definitions<CR>
 nmap <silent> gi :Telescope coc implementations<CR>
-nmap <silent> gr :Telescope coc references<CR>
+"nmap <silent> gr :Telescope coc references<CR>
+nmap <silent> gr <Plug>(coc-references)
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -396,10 +408,6 @@ let g:deoplete#file#enable_buffer_path = 1
 
 
 
-" deoplete tab-complete
-inoremap <expr><tab> pumvisible() ? "\<c-n>" : "\<tab>"
-inoremap <C-Space> <C-x><C-o>
-inoremap <C-@> <C-Space>
 " tern
 "autocmd FileType javascript nnoremap <silent> <buffer> gb :TernDef<CR>
 
@@ -427,12 +435,12 @@ map <leader>dp :diffput<CR>
 "map <leader>b :CtrlPBuffer<CR>
 "map <leader>. :CtrlPTag<CR>
 
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-nnoremap cb <cmd>Telescope git_branches<cr>
-nnoremap <leader>fr <cmd>Telescope resume<cr>
+"map <leader>ff <cmd>Telescope find_files<cr>
+map <leader>fg <cmd>Telescope live_grep<cr>
+map <leader>fb <cmd>Telescope buffers<cr>
+map <leader>fh <cmd>Telescope help_tags<cr>
+map cb <cmd>Telescope git_branches<cr>
+map <leader>fr <cmd>Telescope resume<cr>
 
 "nnoremap <F10>j <c-w>j
 "nnoremap <F10>k <c-w>k
@@ -561,7 +569,7 @@ let g:rails_default_file='config/database.yml'
 "map <F5> :NERDTreeToggle <cr>
 "let NERDTreeQuitOnOpen=0
 "map <F5> :CocCommand explorer<cr>
-map <F5> :CHADopen<cr>
+map <F5> :NeoTreeRevealToggle<cr>
 " toggle taglist
 "map <F6> :TagbarToggle<CR>
 map <F6> :Vista!!<CR>
@@ -690,6 +698,11 @@ endif
 " hi CocFloating guibg=none guifg=none.
 set background=dark
 colorscheme NeoSolarized
+
+"let g:create_pr_git_services = { 
+"      \ 'stash.int.klarna.net:7999': 
+"     \ 'https://stash.int.klarna.net/projects/{{owner}}/repos/{{repository}}/pull-requests?create&sourceBranch={{branch_name}}&t=1' 
+"     \ }
 
 lua require('config')
 

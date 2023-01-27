@@ -4,15 +4,13 @@
 
 [merge] 
 	keepBackup = false
-	conflictstyle = diff3
-	tool = vim_mergetool
-
-[mergetool "vim_mergetool"] 
+	tool = p4merge 
+[mergetool] 
 	prompt=false 
-	cmd = nvim -f -c "MergetoolStart" "$MERGED" "$BASE" "$LOCAL" "$REMOTE" 
+	cmd = p4merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED" 
 	keepTemporaries = false 
 	trustExitCode = false 
-
+	keepBackup = false 
 [diff] 
 	tool = p4merge 
 
@@ -22,6 +20,7 @@
 	keepTemporaries = false 
 	trustExitCode = false 
 	keepBackup = false
+
 [push]
 	default = current
 [core]

@@ -1,16 +1,23 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-export PATH=/opt/homebrew/Cellar/helm@2/2.17.0/bin:/opt/homebrew/opt/terraform@0.12/bin:/opt/homebrew/bin:$PATH:~/.kube/plugins/jordanwilson230:~/.local/bin
+export PATH=/Library/Frameworks/Python.framework/Versions/Current/bin:/opt/homebrew/Cellar/helm@2/2.17.0/bin:/opt/homebrew/opt/terraform@0.12/bin:/opt/homebrew/bin:$PATH:~/.kube/plugins/jordanwilson230:~/.local/bin
 
 # Path to your oh-my-zsh installation.
 export KUBE_EDITOR=nvim 
+export EDITOR=nvim
+export VISUAL=nvim
+export CLICOLOR=YES
+export XDG_CONFIG_HOME=$HOME/.config
+export RECEPIENT=rusty.phillips@klarna.com
 
+alias aws='/usr/local/bin/aws'
 alias jdk7='sdk u java 7.0.322-zulu'
-alias jdk8='sdk u java 8.0.332-zulu'
+alias jdk8='sdk u java 8.0.345-zulu'
 alias jdk11='sdk u java 11.0.15-zulu'
 alias jdk18='sdk u java 18-amzn'
-alias lsc='ls -lrhtG'
+alias ls='gls --color'
+alias lsc='gls -lrhtG --color'
 #.0.0:8080->8080/tcp                            flexreceipts-palias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -166,6 +173,7 @@ LOGIN="google-login"
 LABEL="Login for Google Suite"
 GOOGLE_AUTH="/opt/homebrew/bin/gsts"
 GOOGLE_USER="rusty.phillips@flexengage.com"
+GPG_KEY="rusty.phillips@klarna.com"
 
 alias kdev="kenv dev"
 alias ktest="kenv test"
@@ -178,11 +186,24 @@ kenv() {
   kubectl --context $PROFILE-aws "$@"
 }
 
+## TO USE THIS, you need gpg.  You must first run gpg --gen-key and create a GPG key.  
+#  Arguments:  email (of the gpg key you created with gpg --gen-key), username, password
+klarna_encrypt() {
+  username=$2
+  password=$3
+  echo "AD_USERNAME=$username\nAD_PASSWORD=$password" | gpg -r $GPG_KEY -q --encrypt --output ~/.secrets/klarna_env.gpg
+}
+
+klarna_login() {
+  account=$1
+  eval $(gpg -q --decrypt ~/.secrets/klarna_env.gpg)
+  eval $(aws-login-tool login -a $1 -r  iam-sync/digital-receipts/digital-receipts.IdP_admin)
+}
+
 awslogin() {
   PROFILE=$1
-  if [ $PROFILE != "prod" ]
+  if [[ $PROFILE != "prod" ]] && [[ $PROFILE != k* ]]
   then
-
     case $PROFILE in
       "dev")
         ROLE="arn:aws:iam::048502202118:role/google-idp-admin"
@@ -200,15 +221,28 @@ awslogin() {
         ROLE="arn:aws:iam::209987143508:role/google-idp-admin"
         ;;
     esac
-
-    echo "$GOOGLE_AUTH --username $GOOGLE_USER --idp-id C01pojxkm --sp-id 216509506152 --aws-profile $PROFILE --aws-role-arn $ROLE"
     $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE
+  fi
+  if [[ $PROFILE == k* ]]
+  then
+    case $PROFILE in
+      "kplay")
+        ACCOUNT=854609004233
+        ;;
+      "knp")
+        ACCOUNT=246126820103
+        ;;
+      "kprod")
+        ACCOUNT=535118496902
+        ;;
+    esac
+    klarna_login $ACCOUNT
+    return 0
   fi
   kubectx $PROFILE-aws
   export AWS_REGION=us-east-1
   export AWS_PROFILE=$PROFILE
   export AWS_DEFAULT_REGION=us-east-1
-
 }
 
 k9() {
@@ -344,6 +378,7 @@ zinit wait lucid atload"zicompinit; zicdreplay" blockf for \
     zsh-users/zsh-completions
 
 zinit wait lucid for \
+  OMZP::last-working-dir \
   OMZP::docker/_docker \
   OMZL::git.zsh \
   OMZP::git \
@@ -355,9 +390,13 @@ zinit wait lucid for \
   OMZP::git-auto-fetch \
   OMZP::dotenv \
   lukechilds/zsh-nvm \
-  OMZP::mvn  
- # OMZP::last-working-dir
+  OMZP::mvn \
+  OMZP::sudo \
+  chuwy/zsh-secrets 
+ 
 
+# Download the default profile for a better "ls" color set.
+zinit pack for dircolors-material
 
 # Adding sdkman
 zplugin ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
@@ -386,4 +425,5 @@ _grond_yargs_completions()
 }
 compdef _grond_yargs_completions grond
 ###-end-grond-completions-###
+
 

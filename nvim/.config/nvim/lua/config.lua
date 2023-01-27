@@ -4,34 +4,13 @@ if fn.empty(fn.glob(install_path)) > 0 then
   packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
 
-require "loadPackerConfig"
-
--- This is your opts table
-require("telescope").setup {
-  defaults = {
-    wrap_results = true,
-    history = {
-      path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
-      limit = 100
-    },
-    mappings = {
-      i = {
-        ["<C-j>"] = "cycle_history_next",
-        ["<C-f>"] = "cycle_history_prev"
-      }
-    }
-  },
-  extensions = {
-    ["ui-select"] = {
-      require("telescope.themes").get_dropdown {
-        -- even more opts
-      }
-    }
-  }
-}
-
-local actions = require "telescope.actions"
+local actions = require('telescope.actions')
 local state = require "telescope.state"
+
+vim.g.create_pr_git_services = { ["stash.int.klarna.net:7999"] = 
+ 'https://stash.int.klarna.net/projects/{{owner}}/repos/{{repository}}/pull-requests?create&sourceBranch={{branch_name}}&t=1' }
+
+require "loadPackerConfig"
 
 local last_find_files = nil
 
@@ -58,3 +37,33 @@ local function find_files(opts)
     require "telescope.builtin".resume { picker = last_find_files }
   end
 end
+
+vim.keymap.set('n', '<leader>ff', find_files)
+
+-- This is your opts table
+require("telescope").setup {
+  defaults = {
+    wrap_results = true,
+    history = {
+      path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
+      limit = 100
+    },
+    mappings = {
+      i = {
+        ["<C-Down>"] = actions.cycle_history_next,
+        ["<C-up>"] = actions.cycle_history_prev
+      }
+    }
+  },
+  extensions = {
+    ["ui-select"] = {
+      require("telescope.themes").get_dropdown {
+        -- even more opts
+      }
+    }
+  }
+}
+
+
+
+
