@@ -418,7 +418,7 @@ let g:project_use_nerdtree = 1
 :let mapleader = "."
 " Git shortcuts
 map <leader>gb :Git blame<CR>
-map <leader>gs :Git<CR>
+map <leader>gs :NeoTreeShowToggle git_status<CR>
 map <leader>gd :Gdiff<CR>
 map <leader>gl :Gclog<CR>
 map <leader>gc :Git commit<CR>
@@ -569,7 +569,7 @@ let g:rails_default_file='config/database.yml'
 "map <F5> :NERDTreeToggle <cr>
 "let NERDTreeQuitOnOpen=0
 "map <F5> :CocCommand explorer<cr>
-map <F5> :NeoTreeRevealToggle<cr>
+map <F5> :NeoTreeShowToggle<cr>
 " toggle taglist
 "map <F6> :TagbarToggle<CR>
 map <F6> :Vista!!<CR>

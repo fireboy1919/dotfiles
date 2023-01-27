@@ -81,7 +81,12 @@ require('packer').startup(function(use)
       require("neo-tree").setup({
         filesystem = {
           filtered_items = {
-            hide_hidden = false
+            hide_dotfiles = false
+          },
+          git_status = {
+            window = {
+              position = "left"
+            }
           }
         },
         default_component_configs = {
