@@ -11,13 +11,26 @@ export CLICOLOR=YES
 export XDG_CONFIG_HOME=$HOME/.config
 export RECEPIENT=rusty.phillips@klarna.com
 
-alias aws='/usr/local/bin/aws'
 alias jdk7='sdk u java 7.0.322-zulu'
 alias jdk8='sdk u java 8.0.345-zulu'
 alias jdk11='sdk u java 11.0.15-zulu'
 alias jdk18='sdk u java 18-amzn'
 alias ls='gls --color'
 alias lsc='gls -lrhtG --color'
+alias make=gmake
+
+alias j="jump"
+
+export GOOGLE_USERNAME="rusty.phillips@flexreceipts.com" # This is your Google username - for example, john.doe@flexreceipts.com
+export GOOGLE_IDP_ID="C01pojxkm"
+export GOOGLE_SP_ID="216509506152"
+export GOOGLE_AUTH_DURATION="28800"
+export AWS_DEV_ROLE="arn:aws:iam::048502202118:role/google-idp-admin"
+export AWS_TEST_ROLE="arn:aws:iam::032946347770:role/google-idp-admin"
+export AWS_SANDBOX_ROLE="arn:aws:iam::167287004810:role/google-idp-admin"
+export AWS_PROD_ROLE="arn:aws:iam::450266734631:role/google-idp-read-only"
+export AWS_INTERNAL_ROLE="arn:aws:iam::209987143508:role/google-idp-admin"
+
 #.0.0:8080->8080/tcp                            flexreceipts-palias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -147,7 +160,7 @@ ENABLE_CORRECTION="true"
 # Example aliases
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 # alias zshconfig="mate ~/.zshrc"
-export AWS_CBOR_DISABLE=1
+#export AWS_CBOR_DISABLE=1
 #PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[green]%} %~%{$reset_color%}  |$(git_prompt_info)> '
 
 
@@ -171,7 +184,7 @@ alias tmux='tmux -u'
 ST=/usr/bin/secret-tool
 LOGIN="google-login"
 LABEL="Login for Google Suite"
-GOOGLE_AUTH="/opt/homebrew/bin/gsts"
+GOOGLE_AUTH=gsts
 GOOGLE_USER="rusty.phillips@flexengage.com"
 GPG_KEY="rusty.phillips@klarna.com"
 
@@ -200,8 +213,15 @@ klarna_login() {
   eval $(aws-login-tool login -a $1 -r  iam-sync/digital-receipts/digital-receipts.IdP_admin)
 }
 
+redrive() {
+  awslogin prod
+  /Users/rusty.phillips/projects/alerts/runbook/general/sqs/dlq_redriver.sh
+}
+
 awslogin() {
   PROFILE=$1
+  unalias gsts 2&>/dev/null
+  export AWS_PROFILE=$PROFILE
   if [[ $PROFILE != "prod" ]] && [[ $PROFILE != k* ]]
   then
     case $PROFILE in
@@ -221,8 +241,22 @@ awslogin() {
         ROLE="arn:aws:iam::209987143508:role/google-idp-admin"
         ;;
     esac
-    $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE
+    #aws-google-auth  --bg-response js_enabled -u $GOOGLE_USER -R 'us-east-1' -I $GOOGLE_IDP_ID -S $GOOGLE_SP_ID -d $GOOGLE_AUTH_DURATION -k -p default -r $ROLE -l debug --save-saml-flow
+  $GOOGLE_AUTH --aws-region=us-east-1 --username=$GOOGLE_USER --idp-id=$GOOGLE_IDP_ID --sp-id=$GOOGLE_SP_ID --aws-role-arn=$ROLE -o json | jq -r '"export AWS_ACCESS_KEY_ID="+.AccessKeyId + "\nexport AWS_SECRET_ACCESS_KEY="+.SecretAccessKey + "\nexport AWS_SESSION_TOKEN=" + .SessionToken' | source /dev/stdin
+ echo $GOOGLE_AUTH --aws-region=us-east-1 --username=$GOOGLE_USER --idp-id=$GOOGLE_IDP_ID --sp-id=$GOOGLE_SP_ID --aws-role-arn=$ROLE -o json
+  #export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s")
+#  $(aws sts assume-role \
+#    --role-arn $ROLE \
+#    --role-session-name CURRENT_SESSION \
+#    --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" \
+#    --output text))
+
+  else
+    unset AWS_SECRET_ACCESS_KEY
+    unset AWS_SESSION_TOKEN
+    unset AWS_ACCESS_KEY_ID
   fi
+
   if [[ $PROFILE == k* ]]
   then
     case $PROFILE in
@@ -241,7 +275,7 @@ awslogin() {
   fi
   kubectx $PROFILE-aws
   export AWS_REGION=us-east-1
-  export AWS_PROFILE=$PROFILE
+  #export AWS_PROFILE=$PROFILE
   export AWS_DEFAULT_REGION=us-east-1
 }
 
@@ -394,7 +428,6 @@ zinit wait lucid for \
   OMZP::sudo \
   chuwy/zsh-secrets 
  
-
 # Download the default profile for a better "ls" color set.
 zinit pack for dircolors-material
 
@@ -427,3 +460,18 @@ compdef _grond_yargs_completions grond
 ###-end-grond-completions-###
 
 
+# Generated for envman. Do not edit.
+[ -s "$HOME/.config/envman/load.sh" ] && source "$HOME/.config/envman/load.sh"
+export ANDROID_HOME="/Users/rusty.phillips/Library/Android/sdk"
+export ANDROID_SDK_ROOT="/Users/rusty.phillips/Library/Android/sdk"
+export GRADLE_USER_HOME="/usr/local/share/gradle"
+export M2_HOME="/usr/local/share/maven"
+. $(brew --prefix asdf)/libexec/asdf.sh
+eval "$(direnv hook $SHELL)"
+export PATH="${PATH}:/Users/rusty.phillips/.asdf/installs/python/3.9.10/bin"
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+export PATH="${PATH}:$VOLTA_HOME/bin"
+export PATH="${PATH}:/Users/rusty.phillips/.yarn/bin"
+eval "$(grond completion)"
+export JAVA_HOME="`/usr/libexec/java_home -v AndroidStudioJre`"

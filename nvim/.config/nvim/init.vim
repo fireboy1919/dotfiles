@@ -43,7 +43,6 @@ Plug 'christoomey/vim-tmux-navigator'
 "Plug 'scrooloose/nerdtree'
 "Plug 'Xuyuanp/nerdtree-git-plugin'
 " Plug 'vim-syntastic/Syntastic'
-Plug 'airblade/vim-rooter'
 Plug 'sjl/splice.vim'
 " Plugin 'EasyGrep'
 "Plug 'rking/ag.vim'
@@ -94,7 +93,8 @@ let g:vista_default_executive = 'coc'
 let g:vista_fzf_preview = []
 let g:vista_log_file = expand('~/vista.log')
 
-let g:coc_global_extensions = ['coc-java', 'coc-java-debug', 'coc-jedi', 'coc-sh', 'coc-markdown-preview-enhanced', 'coc-docker', 'coc-groovy']
+"let g:coc_global_extensions = ['coc-java', 'coc-java-debug', 'coc-pyright', 'coc-sh', 'coc-markdown-preview-enhanced', 'coc-docker', 'coc-groovy']
+let g:coc_global_extensions = ['coc-pyright', 'coc-sh', 'coc-markdown-preview-enhanced', 'coc-docker']
 
 if isdirectory('./node_modules') && isdirectory('./node_modules/prettier')
   let g:coc_global_extensions += ['coc-prettier']
@@ -418,7 +418,7 @@ let g:project_use_nerdtree = 1
 :let mapleader = "."
 " Git shortcuts
 map <leader>gb :Git blame<CR>
-map <leader>gs :NeoTreeShowToggle git_status<CR>
+map <leader>gs :Git<CR>
 map <leader>gd :Gdiff<CR>
 map <leader>gl :Gclog<CR>
 map <leader>gc :Git commit<CR>
@@ -569,6 +569,7 @@ let g:rails_default_file='config/database.yml'
 "map <F5> :NERDTreeToggle <cr>
 "let NERDTreeQuitOnOpen=0
 "map <F5> :CocCommand explorer<cr>
+map <F4> :NeoTreeShowToggle git_status<cr>
 map <F5> :NeoTreeShowToggle<cr>
 " toggle taglist
 "map <F6> :TagbarToggle<CR>

@@ -14,5 +14,12 @@
   "eslint.autoFixOnSave": true,
   "eslint.filetypes": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
   "tsserver.formatOnType": true,
-  "coc.preferences.formatOnType": true
+  "coc.preferences.formatOnType": true,
+  "diagnostic.checkCurrentLine": true,
+  "diagnostic.virtualText": true,
+  "diagnostic.virtualTextCurrentLineOnly": false,
+  "java.jdt.ls.java.home": "/Users/rusty.phillips/.zinit/polaris/sdkman/candidates/java/20-amzn",
+  "java.format.enabled": true,
+  "java.import.gradle.java.home": "/Users/rusty.phillips/.zinit/polaris/sdkman/candidates/java/11.0.15-zulu",
+
 }

@@ -15,6 +15,12 @@ require('packer').startup(function(use)
     end
   } 
 
+  use { 'notjedi/nvim-rooter.lua',
+    config = function() 
+      require 'nvim-rooter'.setup()
+    end
+  }
+
   use { 'folke/which-key.nvim',
     config = function()
       require("which-key").setup {
@@ -80,6 +86,7 @@ require('packer').startup(function(use)
     config = function()
       require("neo-tree").setup({
         filesystem = {
+          follow_current_file = true,
           filtered_items = {
             hide_dotfiles = false
           },
@@ -92,18 +99,18 @@ require('packer').startup(function(use)
         default_component_configs = {
           git_status = {
             symbols = {
-              staged = "✚",
               renamed = "➜",
               unmerged = "═",
-              deleted = "✗",
+              deleted = "✖",
+              dirty = "✗",
               ignored = "☒",
               clean = "✔︎",
-              unknown = "?",
-              modified = "✹",
-              added = "󰗖",
-              unstaged = "󰀨",
-              staged = "󱇭",
-              conflict = "󱒼"
+              unknown = "󰝦",
+              modified = "",
+              added = "",
+              unstaged = "",
+              staged = "",
+              conflict = "󰗖"
             }
           }
         }
