@@ -68,6 +68,13 @@ require('packer').startup(function(use)
   use 'peitalin/vim-jsx-typescript'
   use 'MaxMEllon/vim-jsx-pretty'
   use {
+    's1n7ax/nvim-window-picker',
+    tag = 'v2.*',
+    config = function()
+        require'window-picker'.setup()
+    end,
+  }
+  use {
     'prettier/vim-prettier',
     run = 'yarn install',
     ft = {'javascript', 'typescript', 'css', 'less', 'scss', 'graphql', 'markdown', 'vue', 'html'},
