@@ -18,8 +18,6 @@
   "diagnostic.checkCurrentLine": true,
   "diagnostic.virtualText": true,
   "diagnostic.virtualTextCurrentLineOnly": false,
-  "java.jdt.ls.java.home": "/Users/rusty.phillips/.zinit/polaris/sdkman/candidates/java/20-amzn",
+  "java.jdt.ls.java.home": "/Users/rusty.phillips/.zinit/polaris/sdkman/candidates/java/21-amzn",
   "java.format.enabled": true,
-  "java.import.gradle.java.home": "/Users/rusty.phillips/.zinit/polaris/sdkman/candidates/java/11.0.15-zulu",
-
 }

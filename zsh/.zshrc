@@ -242,8 +242,8 @@ awslogin() {
         ;;
     esac
     #aws-google-auth  --bg-response js_enabled -u $GOOGLE_USER -R 'us-east-1' -I $GOOGLE_IDP_ID -S $GOOGLE_SP_ID -d $GOOGLE_AUTH_DURATION -k -p default -r $ROLE -l debug --save-saml-flow
-  $GOOGLE_AUTH --aws-region=us-east-1 --username=$GOOGLE_USER --idp-id=$GOOGLE_IDP_ID --sp-id=$GOOGLE_SP_ID --aws-role-arn=$ROLE -o json | jq -r '"export AWS_ACCESS_KEY_ID="+.AccessKeyId + "\nexport AWS_SECRET_ACCESS_KEY="+.SecretAccessKey + "\nexport AWS_SESSION_TOKEN=" + .SessionToken' | source /dev/stdin
- echo $GOOGLE_AUTH --aws-region=us-east-1 --username=$GOOGLE_USER --idp-id=$GOOGLE_IDP_ID --sp-id=$GOOGLE_SP_ID --aws-role-arn=$ROLE -o json
+  $GOOGLE_AUTH --playwright-engine chromium --aws-region=us-east-1 --username=$GOOGLE_USER --idp-id=$GOOGLE_IDP_ID --sp-id=$GOOGLE_SP_ID --aws-role-arn=$ROLE -o json | jq -r '"export AWS_ACCESS_KEY_ID="+.AccessKeyId + "\nexport AWS_SECRET_ACCESS_KEY="+.SecretAccessKey + "\nexport AWS_SESSION_TOKEN=" + .SessionToken' | source /dev/stdin
+ echo $GOOGLE_AUTH --aws-region=us-east-1 --playwright-engine chrome --username=$GOOGLE_USER --idp-id=$GOOGLE_IDP_ID --sp-id=$GOOGLE_SP_ID --aws-role-arn=$ROLE -o json
   #export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s")
 #  $(aws sts assume-role \
 #    --role-arn $ROLE \

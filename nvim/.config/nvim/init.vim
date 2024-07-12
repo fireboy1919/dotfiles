@@ -73,6 +73,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'sharkdp/fd'
 Plug 'nvim-lua/plenary.nvim'
 
+
 "Plug 'puremourning/vimspector'
 
 "Plug 'neovim/nvim-lspconfig'
@@ -441,6 +442,7 @@ map <leader>fb <cmd>Telescope buffers<cr>
 map <leader>fh <cmd>Telescope help_tags<cr>
 map cb <cmd>Telescope git_branches<cr>
 map <leader>fr <cmd>Telescope resume<cr>
+map <leader>fp <cmd>Telescope projects<cr>
 
 "nnoremap <F10>j <c-w>j
 "nnoremap <F10>k <c-w>k

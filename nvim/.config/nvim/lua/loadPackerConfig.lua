@@ -3,6 +3,8 @@ require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use 'nvim-telescope/telescope.nvim'
   use 'nvim-telescope/telescope-fzy-native.nvim'
+
+  use 'towolf/vim-helm'
   use { 'samoshkin/vim-mergetool',
     config = function() 
       vim.g.mergetool_layout = 'LR,m'
@@ -15,11 +17,11 @@ require('packer').startup(function(use)
     end
   } 
 
-  use { 'notjedi/nvim-rooter.lua',
-    config = function() 
-      require 'nvim-rooter'.setup()
-    end
-  }
+ --use { 'notjedi/nvim-rooter.lua',
+ --   config = function() 
+ --     require 'nvim-rooter'.setup()
+ --   end
+ -- }
 
   use { 'folke/which-key.nvim',
     config = function()
@@ -44,6 +46,17 @@ require('packer').startup(function(use)
     config = function()
       require("telescope").load_extension("coc")
     end,
+  }
+  use {
+  "ahmedkhalf/project.nvim",
+  config = function()
+    require("project_nvim").setup {
+      require('telescope').load_extension('projects')
+      -- your configuration comes here
+      -- or leave it empty to use the default settings
+      -- refer to the configuration section below
+    }
+  end
   }
 --  use {
 --    'kosayoda/nvim-lightbulb',
