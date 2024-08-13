@@ -1,7 +1,12 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-export PATH=/Library/Frameworks/Python.framework/Versions/Current/bin:/opt/homebrew/Cellar/helm@2/2.17.0/bin:/opt/homebrew/opt/terraform@0.12/bin:/opt/homebrew/bin:$PATH:~/.kube/plugins/jordanwilson230:~/.local/bin
+#export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+#export PATH=$PATH:~/.kube/plugins/jordanwilson230
+
+export PATH=/Library/Frameworks/Python.framework/Versions/Current/bin:/opt/homebrew/Cellar/helm@2/2.17.0/bin:~/.kube/plugins/jordanwilson230:~/.local/bin
+export PATH=/opt/homebrew/bin:/opt/homebrew/opt/coreutils/libexec/gnubin:$JAVA_HOME/bin:$PATH
+export PATH=$HOME/airlab/runtime_gems/tools/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export KUBE_EDITOR=nvim 
@@ -9,7 +14,6 @@ export EDITOR=nvim
 export VISUAL=nvim
 export CLICOLOR=YES
 export XDG_CONFIG_HOME=$HOME/.config
-export RECEPIENT=rusty.phillips@klarna.com
 
 alias jdk7='sdk u java 7.0.322-zulu'
 alias jdk8='sdk u java 8.0.345-zulu'
@@ -420,9 +424,12 @@ zinit wait lucid for \
   zsh-users/zsh-autosuggestions \
   OMZP::vi-mode \
   OMZP::kubectl \
+  OMZP::docker \
   OMZP::docker-compose \
   OMZP::git-auto-fetch \
   OMZP::dotenv \
+  lukechilds/zsh-nvm
+  OMZP::rbenv \
   lukechilds/zsh-nvm \
   OMZP::mvn \
   OMZP::sudo \
@@ -431,15 +438,32 @@ zinit wait lucid for \
 # Download the default profile for a better "ls" color set.
 zinit pack for dircolors-material
 
+export NVM_DIR="$HOME/.nvm"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
 # Adding sdkman
 zplugin ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
   atclone"/opt/homebrew/bin/wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
   atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
   atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
 zplugin light zdharma-continuum/null
-
+#
+source "/Users/walter_phillips/.zinit/polaris/sdkman/bin/sdkman-init.sh"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
+# AIRLAB-DO-NOT-MODIFY section:ShellWrapper {{{
+# Airlab will only make edits inside these delimiters.
+
+# Source Airlab's shell integration, if it exists.
+if [ -e ~/.airlab/shellhelper.sh ]; then
+  source ~/.airlab/shellhelper.sh
+fi
+# AIRLAB-DO-NOT-MODIFY section:ShellWrapper }}}
+
+source <(yak completion zsh)
 ###-begin-grond-completions-###
 #
 # yargs command completion script

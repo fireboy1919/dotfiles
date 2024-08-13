@@ -25,6 +25,10 @@
 	default = current
 [core]
 	autocrlf = input
+	precomposeunicode = true
+	excludesfile = /Users/walter_phillips/.gitignore_global
 
+[rerere]
+	enabled = true
 [init]
 	templatedir = ~/.git-templates

@@ -1,3 +1,3 @@
-xstow zsh -t ~
-chsh -s /usr/bin/zsh
+stow zsh -t ~
+chsh -s /bin/zsh
 zsh . ./sdkman.sh
