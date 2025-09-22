@@ -6,10 +6,11 @@ export PATH=$PATH:~/.kube/plugins/jordanwilson230
 # Path to your oh-my-zsh installation.
 export KUBE_EDITOR=nvim 
 
+alias lsc='ls --sort=time -rlh --color'
 alias jdk7='sdk u java 7.0.322-zulu'
 alias jdk8='sdk u java 8.0.265-open'
-alias jdk11='sdk u java 11.0.10-open'
-alias jdk17='sdk u java 17-open'
+alias jdk11='sdk u java 11.0.28-amzn'
+alias jdk17='sdk u java 17.0.15-amzn'
 #alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -49,13 +50,20 @@ then
 fi
 
 precmd() {
-  if command -v setxkbmap &> /dev/null
-  then
-    setxkbmap -option caps:none
-  fi
-  if command -v xmodmap &> /dev/null
-  then
-    xmodmap ~/.Xmodmap 2&>/dev/null
+  local current_time=$(date +%s)
+  local last_keymap_time=${LAST_KEYMAP_TIME:-0}
+  local time_diff=$((current_time - last_keymap_time))
+  
+  if [ $time_diff -ge 1800 ]; then
+    if command -v setxkbmap &> /dev/null
+    then
+      setxkbmap -option caps:none
+    fi
+    if command -v xmodmap &> /dev/null
+    then
+      xmodmap ~/.Xmodmap 2&>/dev/null
+    fi
+    export LAST_KEYMAP_TIME=$current_time
   fi
 }
 
@@ -143,8 +151,8 @@ export AWS_CBOR_DISABLE=1
 #PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[green]%} %~%{$reset_color%}  |$(git_prompt_info)> '
 
 
-#export AWS_REGION=us-east-1
-#export AWS_DEFAULT_REGION=us-east-1
+export AWS_REGION=us-east-1
+export AWS_DEFAULT_REGION=us-east-1
 
 # Something is setting this automatically.  I can't find it.
 unset AWS_SECRET_ACCESS_KEY
@@ -184,6 +192,25 @@ assumerole() {
   eval $(command ~/go/bin/assume-role $@ )
 }
 
+aienv() {
+   # Create a temporary file to store AWS env vars
+    local temp_file=$(mktemp)
+    local settings_file="$HOME/.claude/settings.json"
+
+    # Source the AWS env file to a temporary file as JSON
+    set -a
+    source ~/.aws_env
+    env | grep "^AWS_" | jq -R 'split("=") | {(.[0]): .[1]}' | jq -s add > "$temp_file"
+    set +a
+
+    # Create the settings.json file with env section
+    jq -n --argjson aws_vars "$(cat $temp_file)" '{"env": ($aws_vars + {"CLAUDE_CODE_USE_BEDROCK": "1", "ANTHROPIC_MODEL": "us.anthropic.claude-sonnet-4-20250514-v1:0", "ANTHROPIC_SMALL_MODEL": "us.anthropic.claude-3-5-haiku-20241022-v1:0"})}' > "$settings_file"
+
+    # Remove temporary file
+    rm "$temp_file"
+    echo "Environment variables saved to $settings_file"
+  }
+
 awslogin() {
   PROFILE=$1
   if [ $PROFILE != "prod" ]
@@ -207,20 +234,23 @@ awslogin() {
         ;;
     esac
 
-    echo "$GOOGLE_AUTH --username $GOOGLE_USER --idp-id C01pojxkm --sp-id 216509506152 --aws-profile $PROFILE --aws-role-arn $ROLE"
-    $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE
+#    echo "$GOOGLE_AUTH --username $GOOGLE_USER --idp-id C01pojxkm --sp-id 216509506152 --aws-profile $PROFILE --aws-role-arn $ROLE"
+    $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE --clean
+    cp ~/.cache/gsts/credentials ~/.aws/credentials
   fi
-  kubectx $PROFILE-aws
+#  kubectx $PROFILE-aws
   assumerole $PROFILE 
+
   export AWS_REGION=us-east-1
   export AWS_DEFAULT_REGION=us-east-1
-
+  export | grep AWS > ~/.aws_env    
+  aienv
 }
 
 k9() {
   env="$1"
   awslogin $env
-  k9s --context $env-aws
+  k9s --context $env
 }
 
 rabbitmq() {
@@ -305,6 +335,16 @@ portainer() {
   fi
 }
 
+airesume() {
+  awslogin sandbox
+  CLAUDE_CODE_USE_BEDROCK=1 ANTRHOPIC_MODEL="us.anthropic.claude-sonnet-4-20250514-v1:0" ANTHROPIC_SMALL_MODEL="us.anthropic.claude-3-5-haiku-20241022-v1:0" claude -r
+}
+
+aichat() {
+  claude
+}
+
+
 
 kubedash() {
   zparseopts -D -E -- k=kill r=restart
@@ -350,14 +390,12 @@ zinit wait lucid atload"zicompinit; zicdreplay" blockf for \
     zsh-users/zsh-completions
 
 zinit wait lucid for \
-  OMZP::docker/_docker \
   OMZL::git.zsh \
   OMZP::git \
   jocelynmallon/zshmarks \
   zsh-users/zsh-autosuggestions \
   OMZP::vi-mode \
   OMZP::kubectl \
-  OMZP::docker-compose \
   OMZP::git-auto-fetch \
   OMZP::last-working-dir \
   OMZP::dotenv \
@@ -372,3 +410,22 @@ zplugin light zdharma-continuum/null
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/rustyphillips/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/rustyphillips/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/rustyphillips/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/rustyphillips/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
