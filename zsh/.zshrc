@@ -1,40 +1,36 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+# Modular ZSH Configuration with OS Detection
 
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-export PATH=$PATH:~/.kube/plugins/jordanwilson230
-# Path to your oh-my-zsh installation.
+# Common environment variables and basic settings
 export KUBE_EDITOR=nvim 
+export EDITOR=nvim
+export VISUAL=nvim
+export XDG_CONFIG_HOME=$HOME/.config
 
-alias lsc='ls --sort=time -rlh --color'
+# Common aliases
 alias jdk7='sdk u java 7.0.322-zulu'
-alias jdk8='sdk u java 8.0.265-open'
-alias jdk11='sdk u java 11.0.28-amzn'
-alias jdk17='sdk u java 17.0.15-amzn'
-#alias jdk14='export JAVA_HOME=/usr/lib/jvm/java-14-openjdk-amd64'
+alias j="jump"
+alias s="bookmark"
+alias d="deletemark"
+alias p="showmarks"
+alias l="showmarks"
+alias tmux='tmux -u'
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
-# prompt_context(){}
 
 DEFAULT_USER=rustyphillips
-# Set name of the theme to load. Optionally, if you set this to "random"
-# it'll load a random theme each time that oh-my-zsh is loaded.
-# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-#ZSH_THEME="gruvbox"
-#SOLARIZED_THEME="dark"
 PURE_POWER_MODE=modern   
 
+# History configuration
 HISTFILE=~/.zsh_history
 SAVEHIST=1000000
 HISTSIZE=1000000
 
 setopt HIST_IGNORE_DUPS
 setopt SHARE_HISTORY
+
 # Cycle through history based on characters already typed on the line
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
@@ -43,142 +39,40 @@ zle -N down-line-or-beginning-search
 bindkey "$key[Up]" up-line-or-beginning-search
 bindkey "$key[Down]" down-line-or-beginning-search
 
+# Common nvim setup
 if command -v nvim &> /dev/null
 then
   alias vim=nvim
   alias vi=nvim
 fi
 
-precmd() {
-  local current_time=$(date +%s)
-  local last_keymap_time=${LAST_KEYMAP_TIME:-0}
-  local time_diff=$((current_time - last_keymap_time))
-  
-  if [ $time_diff -ge 1800 ]; then
-    if command -v setxkbmap &> /dev/null
-    then
-      setxkbmap -option caps:none
-    fi
-    if command -v xmodmap &> /dev/null
-    then
-      xmodmap ~/.Xmodmap 2&>/dev/null
-    fi
-    export LAST_KEYMAP_TIME=$current_time
-  fi
-}
-
-# Set list of themes to load
-# Setting this variable when ZSH_THEME=random
-# cause zsh load theme from this variable instead of
-# looking in ~/.oh-my-zsh/themes/
-# An empty array have no effect
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+# Preferred editor for local and remote sessions
+if [[ -n $SSH_CONNECTION ]]; then
+   export EDITOR='vi'
+else
+   export EDITOR='vi'
+fi
 
 # Uncomment the following line to enable command auto-correction.
 ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-# User configuration
-
-# export MANPATH="/usr/local/man:$MANPATH"
-
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Preferred editor for local and remote sessions
- if [[ -n $SSH_CONNECTION ]]; then
-   export EDITOR='vi'
- else
-   export EDITOR='vi'
- fi
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-# alias zshconfig="mate ~/.zshrc"
-export AWS_CBOR_DISABLE=1
-#PS1='${SSH_CONNECTION+"%{$fg_bold[green]%}%n@%m:"}%{$fg_bold[green]%} %~%{$reset_color%}  |$(git_prompt_info)> '
-
-
-export AWS_REGION=us-east-1
-export AWS_DEFAULT_REGION=us-east-1
 
 # Something is setting this automatically.  I can't find it.
 unset AWS_SECRET_ACCESS_KEY
 unset AWS_ACCESS_KEY_ID
 
-alias j="jump"
-alias s="bookmark"
-alias d="deletemark"
-alias p="showmarks"
-alias l="showmarks"
-alias tmux='tmux -u'
-alias assume-role='assumerole'
-
-#alias  `aws-google-auth -u rusty.phillips@flexengage.com -p dev -I C01pojxkm -S 216509506152 --print-creds -d 28800`
-#alias login-`aws-google-auth -u rusty.phillips@flexengage.com -p dev -I C01pojxkm -S 216509506152 --print-creds -d 28800`
-
+# Common Google Auth settings
 ST=/usr/bin/secret-tool
 LOGIN="google-login"
 LABEL="Login for Google Suite"
 GOOGLE_AUTH="/usr/local/bin/gsts"
 GOOGLE_USER="rusty.phillips@flexengage.com"
 
+# Common kubectl aliases
 alias kdev="kenv dev"
 alias ktest="kenv test"
 alias kprod="kenv prod"
 
+# Common functions
 kenv() {
   PROFILE="$1"
   awslogin $PROFILE
@@ -186,36 +80,10 @@ kenv() {
   kubectl --context $PROFILE-aws "$@"
 }
 
-assumerole() {
-  # By default, if it already exists, it doesn't set it.
-  unset $(printenv | sed 's;=.*;;' | grep AWS) || 0
-  eval $(command ~/go/bin/assume-role $@ )
-}
-
-aienv() {
-   # Create a temporary file to store AWS env vars
-    local temp_file=$(mktemp)
-    local settings_file="$HOME/.claude/settings.json"
-
-    # Source the AWS env file to a temporary file as JSON
-    set -a
-    source ~/.aws_env
-    env | grep "^AWS_" | jq -R 'split("=") | {(.[0]): .[1]}' | jq -s add > "$temp_file"
-    set +a
-
-    # Create the settings.json file with env section
-    jq -n --argjson aws_vars "$(cat $temp_file)" '{"env": ($aws_vars + {"CLAUDE_CODE_USE_BEDROCK": "1", "ANTHROPIC_MODEL": "us.anthropic.claude-sonnet-4-20250514-v1:0", "ANTHROPIC_SMALL_MODEL": "us.anthropic.claude-3-5-haiku-20241022-v1:0"})}' > "$settings_file"
-
-    # Remove temporary file
-    rm "$temp_file"
-    echo "Environment variables saved to $settings_file"
-  }
-
 awslogin() {
   PROFILE=$1
   if [ $PROFILE != "prod" ]
   then
-
     case $PROFILE in
       "dev")
         ROLE="arn:aws:iam::048502202118:role/google-idp-admin"
@@ -234,11 +102,9 @@ awslogin() {
         ;;
     esac
 
-#    echo "$GOOGLE_AUTH --username $GOOGLE_USER --idp-id C01pojxkm --sp-id 216509506152 --aws-profile $PROFILE --aws-role-arn $ROLE"
     $GOOGLE_AUTH --username=$GOOGLE_USER --idp-id=C01pojxkm --sp-id=216509506152 --aws-profile=$PROFILE --aws-role-arn=$ROLE --clean
     cp ~/.cache/gsts/credentials ~/.aws/credentials
   fi
-#  kubectx $PROFILE-aws
   assumerole $PROFILE 
 
   export AWS_REGION=us-east-1
@@ -247,12 +113,7 @@ awslogin() {
   aienv
 }
 
-k9() {
-  env="$1"
-  awslogin $env
-  k9s --context $env
-}
-
+# Common Docker management functions
 rabbitmq() {
   zparseopts -D -E -- k=kill r=restart
   [ -n "${kill}" -o -n "$restart" ] && echo "Stopping rabbitmq" && docker stop rabbit >/dev/null && echo "RabbitMQ stopped."
@@ -272,7 +133,6 @@ rabbitmq() {
     fi
   fi
 }
-
 
 localstack() {
   zparseopts -D -E -- k=kill r=restart
@@ -312,7 +172,6 @@ plantuml() {
       echo "PlantUML-server started"
     fi
   fi
-
 }
 
 portainer() {
@@ -334,17 +193,6 @@ portainer() {
     fi
   fi
 }
-
-airesume() {
-  awslogin sandbox
-  CLAUDE_CODE_USE_BEDROCK=1 ANTRHOPIC_MODEL="us.anthropic.claude-sonnet-4-20250514-v1:0" ANTHROPIC_SMALL_MODEL="us.anthropic.claude-3-5-haiku-20241022-v1:0" claude -r
-}
-
-aichat() {
-  claude
-}
-
-
 
 kubedash() {
   zparseopts -D -E -- k=kill r=restart
@@ -375,15 +223,15 @@ autoload -Uz _zinit
 (( ${+_comps} )) && _comps[zinit]=_zinit
 
 # Load a few important annexes, without Turbo
-# (this is currently required for annexes)
 zinit light-mode for \
     zdharma-continuum/z-a-rust \
-    zdharma-continuum/z-a-as-monitor \
     zdharma-continuum/z-a-patch-dl \
+    zdharma-continuum/z-a-as-monitor \
     zdharma-continuum/z-a-bin-gem-node
 
 ### End of Zinit's installer chunk
-#
+
+# Theme and common plugins
 zinit ice depth=1; zinit light romkatv/powerlevel10k
 zinit snippet https://raw.githubusercontent.com/sainnhe/dotfiles/master/.zsh-theme/gruvbox-material-dark.zsh
 zinit wait lucid atload"zicompinit; zicdreplay" blockf for \
@@ -401,31 +249,18 @@ zinit wait lucid for \
   OMZP::dotenv \
   lukechilds/zsh-nvm
 
-# Adding sdkman
-zplugin ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
-  atclone"wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
-  atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
-  atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
-zplugin light zdharma-continuum/null
+# Load OS-specific configuration
+case "$(uname -s)" in
+    Darwin*)
+        [[ -f ~/.config/zsh/macos.zsh ]] && source ~/.config/zsh/macos.zsh
+        ;;
+    Linux*)
+        [[ -f ~/.config/zsh/linux.zsh ]] && source ~/.config/zsh/linux.zsh
+        ;;
+esac
+
+# Load local overrides (machine-specific, not in git)
+[[ -f ~/.config/zsh/local.zsh ]] && source ~/.config/zsh/local.zsh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/rustyphillips/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/rustyphillips/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/rustyphillips/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/rustyphillips/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
