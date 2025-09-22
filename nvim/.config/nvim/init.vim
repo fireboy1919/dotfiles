@@ -411,3 +411,78 @@ colorscheme NeoSolarized
 
 lua require('config')
 
+" Smart neotree toggle function
+function! ToggleNeotreeWithReveal()
+  lua << EOF
+    local neotree_open = false
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      if vim.bo[buf].filetype == "neo-tree" then
+        neotree_open = true
+        break
+      end
+    end
+    
+    if neotree_open then
+      vim.cmd('Neotree close')
+    else
+      vim.cmd('Neotree reveal')
+    end
+EOF
+endfunction
+
+" Auto-reveal only when buffer changes to a different file
+function! AutoRevealOnFileChange()
+  lua << EOF
+    -- Only if we're in a real file and neotree is open
+    if vim.bo.filetype ~= "neo-tree" and vim.bo.buftype == "" then
+      local current_buf = vim.api.nvim_get_current_buf()
+      
+      -- Track the last buffer we revealed for
+      if not vim.g.last_revealed_buffer then
+        vim.g.last_revealed_buffer = -1
+      end
+      
+      -- Only reveal if this is a different buffer than last time
+      if current_buf ~= vim.g.last_revealed_buffer then
+        local neotree_open = false
+        
+        for _, win in ipairs(vim.api.nvim_list_wins()) do
+          local buf = vim.api.nvim_win_get_buf(win)
+          if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "neo-tree" then
+            neotree_open = true
+            break
+          end
+        end
+        
+        if neotree_open then
+          -- Update tracking variable
+          vim.g.last_revealed_buffer = current_buf
+          -- Reveal without changing focus - save and restore current window
+          vim.defer_fn(function()
+            local current_win = vim.api.nvim_get_current_win()
+            -- Try a more aggressive approach: close and reopen with reveal
+            vim.cmd('silent! Neotree close')
+            vim.defer_fn(function()
+              vim.cmd('silent! Neotree reveal')
+              -- Always restore focus to the file window
+              if vim.api.nvim_win_is_valid(current_win) then
+                vim.api.nvim_set_current_win(current_win)
+              end
+            end, 100)
+          end, 100)
+        end
+      end
+    end
+EOF
+endfunction
+
+nnoremap .nr :Neotree reveal<CR>
+nnoremap .nf :Neotree focus<CR>
+nnoremap .nR :Neotree refresh<CR>
+
+" Override F5 mapping after all plugins load
+autocmd VimEnter * nnoremap <F5> :call ToggleNeotreeWithReveal()<CR>
+" Disabled auto-reveal due to neotree navigation issues
+" autocmd BufEnter * call AutoRevealOnFileChange()
+

@@ -150,91 +150,40 @@ local function setup_echodoc()
 end
 
 local function setup_neotree()
-  -- Configure nvim-web-devicons with fallbacks for missing fonts
-  require("nvim-web-devicons").setup({
-    override = {},
-    default = true,
-    -- Override with simple text fallbacks if icons don't display
-    override_by_filename = {
-      [".gitignore"] = {
-        icon = "git",
-        color = "#f1502f",
-        name = "Gitignore"
-      }
-    },
-  })
-  
-  -- Neotree configuration with fallback icons
+  -- Updated neotree setup for current version
   require("neo-tree").setup({
-    close_if_last_window = false,
-    popup_border_style = "rounded",
-    enable_git_status = true,
-    enable_diagnostics = true,
+    filesystem = {
+      follow_current_file = {
+        enabled = true,
+        leave_dirs_open = true,
+      },
+      filtered_items = {
+        hide_dotfiles = false,
+        hide_gitignored = false,
+      },
+    },
     window = {
       position = "left",
       width = 30,
     },
-    filesystem = {
-      filtered_items = {
-        visible = false,
-        hide_dotfiles = true,
-        hide_gitignored = true,
-        hide_by_name = {
-          "node_modules"
-        },
-        never_show = {
-          ".DS_Store",
-          "thumbs.db"
-        },
+    event_handlers = {
+      {
+        event = "file_opened",
+        handler = function()
+          -- Auto-close neo-tree when a file is opened
+          -- require("neo-tree.command").execute({ action = "close" })
+        end
       },
-      follow_current_file = {
-        enabled = true,                 -- Auto-navigate to current file
-        leave_dirs_open = true,         -- Keep parent directories open
-      },
-      group_empty_dirs = false,
-      hijack_netrw_behavior = "open_default",
-      use_libuv_file_watcher = false,
     },
-    buffers = {
-      follow_current_file = true,
-      group_empty_dirs = true,
-      show_unloaded = true,
-    },
-    git_status = {
-      window = {
-        position = "float",
-      }
-    }
   })
 
-  -- F5 keybinding to toggle Neotree
+  -- Simple F5 toggle
   vim.keymap.set('n', '<F5>', ':Neotree toggle<CR>', { desc = "Toggle Neotree", silent = true })
-  -- Additional keybinding to reveal current file in Neotree
-  vim.keymap.set('n', '<leader>nf', ':Neotree reveal<CR>', { desc = "Reveal current file in Neotree", silent = true })
   
-  -- Auto-reveal files in Neotree when opening new buffers (like from Telescope)
-  vim.api.nvim_create_autocmd("BufEnter", {
-    callback = function()
-      -- Only reveal if Neotree is open and we're not in Neotree itself
-      if vim.bo.filetype ~= "neo-tree" and vim.fn.bufname():match("neo%-tree") == nil then
-        -- Check if Neotree is open by looking for neo-tree buffer
-        local neotree_open = false
-        for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-          if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].filetype == "neo-tree" then
-            neotree_open = true
-            break
-          end
-        end
-        
-        if neotree_open then
-          -- Small delay to ensure file is fully loaded
-          vim.defer_fn(function()
-            pcall(vim.cmd, 'Neotree reveal_force_cwd')
-          end, 50)
-        end
-      end
-    end,
-  })
+  -- Manual reveal command that definitely works
+  vim.keymap.set('n', '<leader>nr', function()
+    vim.cmd('Neotree reveal')
+  end, { desc = "Reveal current file in Neotree", silent = true })
 end
 
 local function setup_telescope()
