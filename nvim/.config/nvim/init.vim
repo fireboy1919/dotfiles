@@ -8,101 +8,8 @@ version 6.3
 set undofile                            
 set undodir=~/.vim/undodir  
 
-" Bootstrap Plug
 
-let plug_install = 0
-let autoload_plug_path = '~/.config/nvim/autoload/plug.vim'
-if !filereadable(expand(autoload_plug_path))
-    silent exe '!curl -fL --create-dirs -o ' . autoload_plug_path . 
-        \ ' https://raw.github.com/junegunn/vim-plug/master/plug.vim'
-    execute 'source ' . fnameescape(autoload_plug_path)
-    let plug_install = 1
-endif
-unlet autoload_plug_path
 
-call plug#begin('~/.config/nvim/plugins')
-Plug 'equalsraf/neovim-gui-shim'
-Plug 'tpope/vim-sensible'
-Plug 'tpope/vim-rails'
-"Plug 'vim-airline/vim-airline'
-"Plug 'vim-airline/vim-airline-themes'
-
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-bundler'
-Plug 'tpope/vim-sleuth'
-"Plug 'vim-ruby/vim-ruby'
-"Plug 'carlitux/deoplete-ternjs', { 'do': 'npm install -g tern' }
-"  Using vim-rooter instead.
-" Plugin 'amiorin/vim-project'
-"Plug 'svermeulen/vim-easyclip'
-" Generates tag files to use with ctrlp; requires ctag to be installed.
-" Plug 'ludovicchabant/vim-gutentags'
-Plug 'scrooloose/nerdcommenter'
-Plug 'vim-scripts/AnsiEsc.vim'
-Plug 'christoomey/vim-tmux-navigator'
-"Plug 'scrooloose/nerdtree'
-"Plug 'Xuyuanp/nerdtree-git-plugin'
-" Plug 'vim-syntastic/Syntastic'
-Plug 'airblade/vim-rooter'
-Plug 'sjl/splice.vim'
-" Plugin 'EasyGrep'
-"Plug 'rking/ag.vim'
-Plug 'Shougo/vimproc'
-" Plug 'Chiel92/vim-autoformat'
-Plug 'justone/remotecopy'
-" Plug 'leafgarland/typescript-vim'
-"Plug 'Quramy/tsuquyomi'
-Plug 'suan/vim-instant-markdown'
-"Plug 'majutsushi/tagbar'
-Plug 'liuchengxu/vista.vim'
-
-"Plug 'jreybert/vimagit'
-"Plug 'wokalski/autocomplete-flow', { 'do': 'npm install -g flow-bin' }
-" For func argument completion
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'Shougo/neosnippet'
-Plug 'Shougo/neosnippet-snippets'
-"Plug 'w0rp/ale', { 'do': 'npm install -g prettier-standard' }
-"Plug 'altercation/vim-colors-solarized'
-"Plug 'morhertz/gruvbox'
-Plug 'overcache/NeoSolarized'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'liuchengxu/eleline.vim'
-Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
-Plug 'kristijanhusak/vim-create-pr'
-Plug 'ryanoasis/vim-devicons'
-
-Plug 'sharkdp/fd'
-Plug 'nvim-lua/plenary.nvim'
-
-Plug 'puremourning/vimspector'
-
-"Plug 'neovim/nvim-lspconfig'
-"Plug 'williamboman/nvim-lsp-installer'
-"Plug 'RishabhRD/popfix'
-"Plug 'RishabhRD/nvim-lsputils'
-"Plug 'nvim-lua/lsp-status.nvim'
-"Plug 'mfussenegger/nvim-jdtls'
-"Plug 'beeender/comrade'
-
-" Chadtree:
-"let g:chadtree_settings = {'theme': { 'icon_glyph_set': true } }
-
-" Tag Settings:
-let g:vista#renderer#enable_icon = 1
-let g:vista#finders = ['fzf']
-let g:vista_default_executive = 'coc'
-let g:vista_fzf_preview = []
-let g:vista_log_file = expand('~/vista.log')
-
-let g:coc_global_extension = ['coc-java', 'coc-java-debug', 'coc-jedi', 'coc-sh', 'coc-markdown-preview-enhanced', 'coc-docker']
-
-function! NearestMethodOrFunction() abort
-  return exists('b:vista_nearest_method_or_function') ? b:vista_nearest_method_or_function : ''
-endfunction
-
-set statusline+=%{NearestMethodOrFunction()}
-autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 "set statusline+=%{NearestMethodOrFunction()}
 "autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 " Status line from vista
@@ -135,162 +42,6 @@ autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
       "\ }
 
 
-"" BEGIN COC settings:
-" TextEdit might fail if hidden is not set.
-set hidden
-
-" Some servers have issues with backup files, see #649.
-set nobackup
-set nowritebackup
-
-" Give more space for displaying messages.
-set cmdheight=2
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
-
-" Don't pass messages to |ins-completion-menu|.
-set shortmess+=c
-
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-if has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
-
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
-
-" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
-" position. Coc only does snippet and additional edit on confirm.
-" <cr> could be remapped by other vim plugin, try `:verbose imap <CR>`.
-if exists('*complete_info')
-  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
-else
-  inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-endif
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" GoTo code navigation.
-nmap <silent> gd :Telescope coc definitions<CR>
-nmap <silent> gy :Telescope coc type_definitions<CR>
-nmap <silent> gi :Telescope coc implementations<CR>
-nmap <silent> gr :Telescope coc references<CR>
-
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-
-" Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder.
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Map function and class text objects
-" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
-
-" Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of LS, ex: coc-tsserver
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
-
-" Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
-
-" Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Add (Neo)Vim's native statusline support.
-" NOTE: Please see `:h coc-status` for integrations with external plugins that
-" provide custom statusline: lightline.vim, vim-airline.
-"set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-
-" Mappings for CoCList
-" Show all diagnostics.
-nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions.
-nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
-" Show commands.
-nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
-
-" END COC settings.
 
 
 
@@ -309,35 +60,16 @@ nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 "    \ 'do': 'bash install.sh',
 "    \ }
 
-Plug 'Shougo/echodoc.vim'
-Plug 'udalov/kotlin-vim'
-set cmdheight=2
-let g:echodoc#enable_at_startup = 1
-let g:echodoc#type = 'signature'
-" (Optional) Multi-entry selection UI.
-call plug#end()
-
-if plug_install
-    PlugInstall --sync
-endif
-unlet plug_install
 
 function! StartUp()
   
 endfunction
 
-autocmd BufReadPost *.kt setlocal filetype=kotlin
-
-" This is using this:  https://github.com/fwcd/kotlin-language-server/blob/master/BUILDING.md
-" Not ready, though.
- let g:LanguageClient_serverCommands = {
-    \ 'kotlin': [expand("~/.config/nvim/server/bin/kotlin-language-server")],
-    \ }
 
 autocmd VimEnter * call StartUp()
 
 set nocompatible        " Disable vi compatibility.
-set pastetoggle=<F2>
+"set pastetoggle=<F2>
 
 " fix spurious q's appearing:
 let $NVIM_TUI_ENABLE_CURSOR_SHAPE=0
@@ -407,15 +139,6 @@ inoremap <C-@> <C-Space>
 let g:project_use_nerdtree = 1
 
 
-:let mapleader = "."
-" Git shortcuts
-map <leader>gb :Git blame<CR>
-map <leader>gs :Git<CR>
-map <leader>gd :Gdiff<CR>
-map <leader>gl :Gclog<CR>
-map <leader>gc :Git commit<CR>
-map <leader>gp :Git push<CR>
-set diffopt+=vertical
 
 " Finder plugin:
 "Plug 'ctrlpvim/ctrlp.vim'
@@ -425,12 +148,6 @@ set diffopt+=vertical
 "map <leader>b :CtrlPBuffer<CR>
 "map <leader>. :CtrlPTag<CR>
 
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>fh <cmd>Telescope help_tags<cr>
-nnoremap cb <cmd>Telescope git_branches<cr>
-nnoremap <leader>fr <cmd>Telescope resume<cr>
 
 " The Silver Searcher
 if executable('ag')
@@ -451,7 +168,7 @@ endif
 
 "Autoformat using F3
 
-noremap <F6> :Autoformat<CR><CR>
+" noremap <F6> :Autoformat<CR><CR>  " Commented out - F6 now used for Vista
 
 
 " Syntastic settings
@@ -567,15 +284,6 @@ let g:rails_default_file='config/database.yml'
 " Function keys.
 "------------------------------------------------------------------------------
 
-" toggle nerdtree
-"map <F5> :NERDTreeToggle <cr>
-"let NERDTreeQuitOnOpen=0
-"map <F5> :CocCommand explorer<cr>
-map <F5> :CHADopen<cr>
-" toggle taglist
-"map <F6> :TagbarToggle<CR>
-map <F6> :Vista!!<CR>
-"map <F6> :TlistToggle <cr>
 
 
 "------------------------------------------------------------------------------
