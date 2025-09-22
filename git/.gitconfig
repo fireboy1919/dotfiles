@@ -1,5 +1,5 @@
 [user]
-	email = rusty.phillips@klarna.com
+	email = walter.phillips@ext.airbnb.com
 	name = Rusty Phillips
 
 [merge] 
@@ -32,3 +32,5 @@
 	enabled = true
 [init]
 	templatedir = ~/.git-templates
+[maintenance]
+	repo = /Users/walter_phillips/airlab/repos/treehouse
