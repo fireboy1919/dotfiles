@@ -249,13 +249,14 @@ zinit wait lucid for \
   OMZP::dotenv \
   lukechilds/zsh-nvm
 
-# Load OS-specific configuration
+# Load OS-specific configuration from dotfiles directory
+DOTFILES_DIR="$HOME/dotfiles/zsh"
 case "$(uname -s)" in
     Darwin*)
-        [[ -f ~/.config/zsh/macos.zsh ]] && source ~/.config/zsh/macos.zsh
+        [[ -f "$DOTFILES_DIR/macos.zsh" ]] && source "$DOTFILES_DIR/macos.zsh"
         ;;
     Linux*)
-        [[ -f ~/.config/zsh/linux.zsh ]] && source ~/.config/zsh/linux.zsh
+        [[ -f "$DOTFILES_DIR/linux.zsh" ]] && source "$DOTFILES_DIR/linux.zsh"
         ;;
 esac
 
