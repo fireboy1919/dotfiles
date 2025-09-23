@@ -1,4 +1,6 @@
 # macOS-specific configurations
+TMPDIR="/tmp"
+
 
 # Initialize key array for macOS (fix for empty key sequences)
 typeset -g -A key
