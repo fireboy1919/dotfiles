@@ -25,7 +25,7 @@ end
 local function setup_coc()
   -- COC global extensions
   vim.g.coc_global_extensions = {'coc-java', 'coc-java-debug', 'coc-jedi', 'coc-sh', 'coc-markdown-preview-enhanced', 'coc-docker'}
-  
+
   -- COC settings
   vim.opt.hidden = true
   vim.opt.backup = false
@@ -33,6 +33,8 @@ local function setup_coc()
   vim.opt.cmdheight = 2
   vim.opt.updatetime = 300
   vim.opt.shortmess:append('c')
+
+  -- COC will use WATCHMAN_SOCK environment variable if set
   
   if vim.fn.has("patch-8.1.1564") == 1 then
     vim.opt.signcolumn = "number"
@@ -40,19 +42,28 @@ local function setup_coc()
     vim.opt.signcolumn = "yes"
   end
 
-  -- COC keymaps and autocmds
-  vim.cmd([[
-    " Use tab for trigger completion with characters ahead and navigate.
-    inoremap <silent><expr> <TAB>
-          \ pumvisible() ? "\<C-n>" :
-          \ <SID>check_back_space() ? "\<TAB>" :
-          \ coc#refresh()
-    inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+  -- COC keymaps - use Lua functions to avoid SID issues
+  local function check_back_space()
+    local col = vim.fn.col('.') - 1
+    return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
+  end
 
-    function! s:check_back_space() abort
-      let col = col('.') - 1
-      return !col || getline('.')[col - 1]  =~# '\s'
-    endfunction
+  vim.keymap.set('i', '<TAB>', function()
+    if vim.fn.pumvisible() == 1 then
+      return '<C-n>'
+    elseif check_back_space() then
+      return '<TAB>'
+    else
+      return vim.fn['coc#refresh']()
+    end
+  end, { expr = true, silent = true })
+
+  vim.keymap.set('i', '<S-TAB>', function()
+    return vim.fn.pumvisible() == 1 and '<C-p>' or '<C-h>'
+  end, { expr = true, silent = true })
+
+  -- COC autocmds and other mappings
+  vim.cmd([[
 
     " Use <c-space> to trigger completion.
     if has('nvim')
@@ -241,7 +252,7 @@ local function setup_fugitive()
 end
 
 local function setup_vista_keymaps()
-  vim.keymap.set('n', '<F6>', ':Vista!!<CR>')
+  -- This function is no longer needed - F6 is set in vista config
 end
 
 local function setup_kotlin()
@@ -283,12 +294,23 @@ require('packer').startup(function(use)
 
   use { 'liuchengxu/vista.vim',
     config = function()
-      -- Vista keybinding
-      vim.keymap.set('n', '<F6>', ':Vista!!<CR>', { desc = "Toggle Vista", silent = true })
-      -- Basic vista configuration
-      vim.g.vista_default_executive = 'coc'
+      -- Basic vista configuration - use ctags as primary, coc as secondary
+      vim.g.vista_default_executive = 'ctags'
+      vim.g.vista_executive_for = {
+        javascript = 'coc',
+        typescript = 'coc',
+        python = 'coc',
+        java = 'coc',
+      }
       vim.g['vista#renderer#enable_icon'] = 1
       vim.g['vista#finders'] = {'fzf'}
+      -- Ensure Vista can find ctags
+      vim.g.vista_ctags_cmd = {
+        haskell = 'hasktags -x -o - -c',
+      }
+      -- Close Vista on file selection
+      vim.g.vista_close_on_jump = 1
+      -- F6 mapping is set in init.vim after lua config loads
     end
   }
 

@@ -411,6 +411,9 @@ colorscheme NeoSolarized
 
 lua require('config')
 
+" Vista F6 mapping - set after all plugins load
+nnoremap <F6> :Vista!!<CR>
+
 " Smart neotree toggle function
 function! ToggleNeotreeWithReveal()
   lua << EOF

@@ -1,13 +1,18 @@
 # Modular ZSH Configuration with OS Detection
 
 # Common environment variables and basic settings
-export KUBE_EDITOR=nvim 
+export KUBE_EDITOR=nvim
 export EDITOR=nvim
 export VISUAL=nvim
 export XDG_CONFIG_HOME=$HOME/.config
 
+# Add dotfiles zsh scripts to PATH
+export PATH="$HOME/dotfiles/zsh:$PATH"
+
+alias ls='gls --color'
+alias lsc='gls -lrhtG --color'
+
 # Common aliases
-alias jdk7='sdk u java 7.0.322-zulu'
 alias j="jump"
 alias s="bookmark"
 alias d="deletemark"
@@ -247,6 +252,11 @@ zinit wait lucid for \
   OMZP::git-auto-fetch \
   OMZP::last-working-dir \
   OMZP::dotenv \
+  OMZP::podman \
+  OMZP::rbenv \
+  OMZP::mvn \
+  OMZP::sudo \
+  chuwy/zsh-secrets \
   lukechilds/zsh-nvm
 
 # Load OS-specific configuration from dotfiles directory

@@ -1,0 +1,67 @@
+#!/usr/bin/env zsh
+# Smart JDK switcher script
+
+if [[ $# -eq 0 ]]; then
+  echo "Usage: jdk <version>"
+  echo "Example: jdk 11, jdk 17, jdk 21"
+  exit 1
+fi
+
+version="$1"
+
+# Check if SDKMAN is available
+if ! command -v sdk >/dev/null 2>&1; then
+  echo "Error: SDKMAN not found. Please install SDKMAN first."
+  exit 1
+fi
+
+# Try the fast approach first - attempt to use any installed version
+echo "Attempting to switch to JDK ${version}..."
+
+# Look for installed Corretto first, then any installed version
+corretto_installed=($(sdk list java | grep "installed" | grep -E "${version}\." | grep "amzn" | awk '{print $NF}'))
+any_installed=($(sdk list java | grep "installed" | grep -E "${version}\." | awk '{print $NF}'))
+
+if [[ ${#corretto_installed[@]} -gt 0 ]]; then
+  latest_version="${corretto_installed[-1]}"
+  echo "Setting Corretto JDK ${latest_version} as default"
+  sdk default java "${latest_version}"
+elif [[ ${#any_installed[@]} -gt 0 ]]; then
+  latest_version="${any_installed[-1]}"
+  echo "Setting JDK ${latest_version} as default"
+  sdk default java "${latest_version}"
+else
+  # Try to install the latest available version for this major version
+  echo "JDK ${version} not installed. Searching for available versions..."
+
+  # First try to find Corretto versions
+  corretto_versions=($(sdk list java | grep -E "${version}\." | grep "amzn" | awk '{print $NF}' | grep -v "installed"))
+
+  if [[ ${#corretto_versions[@]} -gt 0 ]]; then
+    latest_available="${corretto_versions[-1]}"
+    echo "Installing preferred Corretto JDK ${latest_available}..."
+    sdk install java "${latest_available}"
+  else
+    # Fall back to any available version
+    available_versions=($(sdk list java | grep -E "${version}\." | awk '{print $NF}' | grep -v "installed"))
+
+    if [[ ${#available_versions[@]} -gt 0 ]]; then
+      latest_available="${available_versions[-1]}"
+      echo "No Corretto version found. Installing JDK ${latest_available}..."
+      sdk install java "${latest_available}"
+    else
+      echo "No JDK ${version} versions available in SDKMAN"
+      exit 1
+    fi
+  fi
+
+  # Check if installation was successful
+  if [[ $? -eq 0 ]]; then
+    echo "Successfully installed and set JDK ${latest_available} as default"
+    # Ensure it's set as default
+    sdk default java "${latest_available}"
+  else
+    echo "Failed to install JDK ${latest_available}"
+    exit 1
+  fi
+fi
