@@ -13,6 +13,8 @@ export PATH=$HOME/airlab/runtime_gems/tools/bin:$PATH
 
 # macOS-specific environment variables
 export CLICOLOR=YES
+alias ls='gls --color'
+alias lsc='ls -lrhtG --color'
 
 # Start watchman with the standard socket path that COC expects
 if command -v watchman >/dev/null 2>&1; then
@@ -34,14 +36,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
-# macOS-specific SDKMAN setup
-zinit ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
-  atclone"/opt/homebrew/bin/wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
-  atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
-  atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
-zinit light zdharma-continuum/null
-
-# Source SDKMAN init for macOS user path
 
 # macOS-specific development tools
 if command -v yak >/dev/null 2>&1; then

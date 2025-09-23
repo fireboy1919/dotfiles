@@ -70,12 +70,6 @@ aichat() {
   claude
 }
 
-# Linux SDKMAN setup
-zinit ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
-  atclone"wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
-  atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
-  atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
-zinit light zdharma-continuum/null
 
 # Linux NVM setup
 export NVM_DIR="$HOME/.nvm"
@@ -97,10 +91,6 @@ unset __conda_setup
 # Linux-specific Docker socket path (standard Linux)
 alias portainer_start='docker run -d -p 9000:9000 --name portainer -v //var/run/docker.sock:/var/run/docker.sock -v portainer-data:/data portainer/portainer:latest'
 
-# Linux JDK aliases (original versions)
-alias jdk8='sdk u java 8.0.265-open'
-alias jdk11='sdk u java 11.0.28-amzn'
-alias jdk17='sdk u java 17.0.15-amzn'
 
 # Linux-specific k9s context
 k9() {
@@ -108,3 +98,4 @@ k9() {
   awslogin $env
   k9s --context $env
 }
+

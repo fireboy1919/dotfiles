@@ -1,5 +1,6 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # Smart JDK switcher script
+# Usage: jdk <version>
 
 if [[ $# -eq 0 ]]; then
   echo "Usage: jdk <version>"
@@ -9,10 +10,25 @@ fi
 
 version="$1"
 
-# Check if SDKMAN is available
+# Initialize SDKMAN if not already available
 if ! command -v sdk >/dev/null 2>&1; then
-  echo "Error: SDKMAN not found. Please install SDKMAN first."
-  exit 1
+  # Try to find and source SDKMAN
+  if [[ -n "$ZPFX" && -f "$ZPFX/sdkman/bin/sdkman-init.sh" ]]; then
+    export SDKMAN_DIR="$ZPFX/sdkman"
+    source "$ZPFX/sdkman/bin/sdkman-init.sh"
+  elif [[ -f "/home/rustyphillips/.zinit/polaris/sdkman/bin/sdkman-init.sh" ]]; then
+    export SDKMAN_DIR="/home/rustyphillips/.zinit/polaris/sdkman"
+    source "/home/rustyphillips/.zinit/polaris/sdkman/bin/sdkman-init.sh"
+  elif [[ -f "$HOME/.sdkman/bin/sdkman-init.sh" ]]; then
+    export SDKMAN_DIR="$HOME/.sdkman"
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+  fi
+  
+  # Check again after trying to initialize
+  if ! command -v sdk >/dev/null 2>&1; then
+    echo "Error: SDKMAN not found. Please install SDKMAN first."
+    exit 1
+  fi
 fi
 
 # Try the fast approach first - attempt to use any installed version
