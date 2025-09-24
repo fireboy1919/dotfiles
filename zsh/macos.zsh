@@ -1,7 +1,6 @@
 # macOS-specific configurations
 TMPDIR="/tmp"
 
-
 # Initialize key array for macOS (fix for empty key sequences)
 typeset -g -A key
 key[Up]=${terminfo[kcuu1]}
@@ -36,6 +35,17 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
+# macOS-specific SDKMAN setup
+zinit ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
+  atclone"/opt/homebrew/bin/wget https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
+  atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
+  atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
+zinit light zdharma-continuum/null
+
+unset GRADLE_USER_HOME
+unset GRADLE_HOME
+
+# Source SDKMAN init for macOS user path
 
 # macOS-specific development tools
 if command -v yak >/dev/null 2>&1; then

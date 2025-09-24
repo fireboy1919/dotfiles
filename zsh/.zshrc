@@ -9,6 +9,13 @@ export XDG_CONFIG_HOME=$HOME/.config
 # Add dotfiles zsh scripts to PATH
 export PATH="$HOME/dotfiles/zsh:$PATH"
 
+# Ensure SSH agent is running and keys are loaded
+if [ -z "$SSH_AUTH_SOCK" ]; then
+    eval "$(ssh-agent -s)"
+    # Add your SSH keys (adjust path as needed)
+    ssh-add ~/.ssh/id_rsa 2>/dev/null || ssh-add ~/.ssh/id_ed25519 2>/dev/null || true
+fi
+
 alias ls='gls --color'
 alias lsc='gls -lrhtG --color'
 
@@ -275,3 +282,6 @@ esac
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Unset GRADLE_USER_HOME at the end to override any plugin settings
+unset GRADLE_USER_HOME

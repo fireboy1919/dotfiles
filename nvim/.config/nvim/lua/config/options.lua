@@ -15,7 +15,18 @@ vim.opt.autowrite = true -- Auto save when switching buffers
 
 -- Configure LazyVim root detection (prioritize Gradle over git)
 vim.g.root_spec = {
-  { "build.gradle.kts", "build.gradle", "pom.xml" },
+  {
+    -- Gradle/Maven first
+    "build.gradle.kts",
+    "build.gradle",
+    "settings.gradle.kts",
+    "settings.gradle",
+    "pom.xml",
+    -- Bazel workspace markers
+    "WORKSPACE",
+    "WORKSPACE.bazel",
+    "MODULE.bazel",
+  },
   { ".git", "lua" },
   "cwd"
 }
