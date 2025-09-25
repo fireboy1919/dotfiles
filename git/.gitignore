@@ -6,7 +6,7 @@ log
 .vagrant
 db/*.sql
 
-# OS-specific and local configuration files
+# Local machine-specific zsh overrides (not in git)
 .config/zsh/local.zsh
 
 # Neovim plugin directories (these are auto-generated)

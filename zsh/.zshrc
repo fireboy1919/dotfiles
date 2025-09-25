@@ -266,6 +266,22 @@ zinit wait lucid for \
   chuwy/zsh-secrets \
   lukechilds/zsh-nvm
 
+# Cross-platform SDKMAN setup
+WGET_CMD=""
+if command -v wget >/dev/null 2>&1; then
+    WGET_CMD="wget"
+elif command -v /opt/homebrew/bin/wget >/dev/null 2>&1; then
+    WGET_CMD="/opt/homebrew/bin/wget"
+fi
+
+if [[ -n "$WGET_CMD" ]]; then
+    zinit ice as"program" pick"$ZPFX/sdkman/bin/sdk" id-as'sdkman' run-atpull \
+      atclone"$WGET_CMD https://get.sdkman.io -O scr.sh; SDKMAN_DIR=$ZPFX/sdkman bash scr.sh" \
+      atpull"SDKMAN_DIR=$ZPFX/sdkman sdk selfupdate" \
+      atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
+    zinit light zdharma-continuum/null
+fi
+
 # Load OS-specific configuration from dotfiles directory
 DOTFILES_DIR="$HOME/dotfiles/zsh"
 case "$(uname -s)" in
