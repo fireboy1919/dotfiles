@@ -1,37 +1,12 @@
 #!/bin/sh
 
-# Use STOW_CMD if set by install-all.sh, otherwise detect OS
-if [ -z "$STOW_CMD" ]; then
-    case "$(uname -s)" in
-        Darwin*)
-            STOW_CMD="stow"
-            ZSH_PATH="/opt/homebrew/bin/zsh"
-            ;;
-        Linux*)
-            STOW_CMD="xstow"
-            ZSH_PATH="/usr/bin/zsh"
-            ;;
-        *)
-            echo "Unsupported OS: $(uname -s)"
-            exit 1
-            ;;
-    esac
-fi
+# Source common utilities
+. ./common.sh
 
-# Set ZSH_PATH if not already set
-if [ -z "$ZSH_PATH" ]; then
-    case "$(uname -s)" in
-        Darwin*)
-            ZSH_PATH="/opt/homebrew/bin/zsh"
-            ;;
-        Linux*)
-            ZSH_PATH="/usr/bin/zsh"
-            ;;
-    esac
-fi
+detect_os
 
 echo "Installing zsh dotfiles using $STOW_CMD..."
-$STOW_CMD zsh -t ~
+stow_package zsh
 
 # Change shell to zsh if it exists
 if [ -f "$ZSH_PATH" ]; then
