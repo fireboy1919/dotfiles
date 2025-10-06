@@ -1,36 +1,25 @@
 #!/bin/sh
 
-# Use STOW_CMD if set by install-all.sh, otherwise detect OS
-if [ -z "$STOW_CMD" ]; then
-    case "$(uname -s)" in
-        Darwin*)
-            STOW_CMD="stow"
-            ;;
-        Linux*)
-            STOW_CMD="xstow"
-            ;;
-        *)
-            echo "Unsupported OS: $(uname -s)"
-            exit 1
-            ;;
-    esac
-fi
+# Source common utilities
+. ./common.sh
+
+detect_os
 
 # Install universal-ctags for Vista plugin support
-case "$(uname -s)" in
-    Darwin*)
-        if command -v brew >/dev/null 2>&1; then
+case "$OS" in
+    "macOS")
+        if command_exists brew; then
             echo "Installing universal-ctags for Vista plugin..."
             brew install universal-ctags
         else
             echo "Warning: Homebrew not found. Please install universal-ctags manually for Vista plugin support."
         fi
         ;;
-    Linux*)
-        if command -v apt-get >/dev/null 2>&1; then
+    "Linux")
+        if command_exists apt-get; then
             echo "Installing universal-ctags for Vista plugin..."
             sudo apt-get update && sudo apt-get install -y universal-ctags
-        elif command -v dnf >/dev/null 2>&1; then
+        elif command_exists dnf; then
             echo "Installing universal-ctags for Vista plugin..."
             sudo dnf install -y ctags
         else
@@ -40,4 +29,4 @@ case "$(uname -s)" in
 esac
 
 echo "Installing nvim dotfiles using $STOW_CMD..."
-$STOW_CMD nvim -t ~
+stow_package nvim

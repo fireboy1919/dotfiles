@@ -1,0 +1,30 @@
+pre-commit:
+  commands:
+    yak-lint:
+      only:
+        - run: git remote get-url origin | grep -q "git.musta.ch/airbnb/treehouse"
+      run: yak lint
+
+prepare-commit-msg:
+  commands:
+    ai-commit:
+      skip:
+        - merge
+        - rebase
+      run: |
+        # Only run for commits without a message source (i.e., not for merges, amends, etc.)
+        # {2} appears to not get substituted, so check if it's still the literal string
+        if [ "{2}" = "{2}" ] || [ -z "{2}" ]; then
+          # Get dynamic session key from iap-auth
+          API_KEY=$(iap-auth https://devaigateway.a.musta.ch 2>/dev/null)
+          if [ $? -eq 0 ] && [ -n "$API_KEY" ]; then
+            # Call oco with hook arguments to simulate git hook context (auto-uncomment is set in ~/.opencommit)
+            OCO_BIN=$(which oco)
+            OCO_API_KEY="$API_KEY" node -e "
+              process.argv[1] = '.git/hooks/prepare-commit-msg';
+              process.argv[2] = '{1}';
+              process.argv[3] = '';
+              require('$OCO_BIN');
+            "
+          fi
+        fi
