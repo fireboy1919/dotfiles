@@ -16,9 +16,6 @@ if [ -z "$SSH_AUTH_SOCK" ]; then
     ssh-add ~/.ssh/id_rsa 2>/dev/null || ssh-add ~/.ssh/id_ed25519 2>/dev/null || true
 fi
 
-alias ls='gls --color'
-alias lsc='gls -lrhtG --color'
-
 # Common aliases
 alias j="jump"
 alias s="bookmark"
@@ -281,6 +278,9 @@ if [[ -n "$WGET_CMD" ]]; then
       atinit"export SDKMAN_DIR=$ZPFX/sdkman; source $ZPFX/sdkman/bin/sdkman-init.sh"
     zinit light zdharma-continuum/null
 fi
+
+zinit ice wait"0" from"gh-r" as"program" mv"mise* -> mise" atload'eval "$(mise activate zsh)"'
+zinit load jdx/mise
 
 # Load OS-specific configuration from dotfiles directory
 DOTFILES_DIR="$HOME/dotfiles/zsh"
