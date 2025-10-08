@@ -30,3 +30,6 @@ vim.g.root_spec = {
   { ".git", "lua" },
   "cwd"
 }
+
+-- Font configuration for better contrast
+vim.opt.guifont = "JetBrainsMono Nerd Font:h12"

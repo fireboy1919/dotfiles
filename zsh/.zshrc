@@ -282,6 +282,10 @@ fi
 zinit ice wait"0" from"gh-r" as"program" mv"mise* -> mise" atload'eval "$(mise activate zsh)"'
 zinit load jdx/mise
 
+# Install lazygit from GitHub releases
+zinit ice wait"0" from"gh-r" as"program"
+zinit load jesseduffield/lazygit
+
 # Load OS-specific configuration from dotfiles directory
 DOTFILES_DIR="$HOME/dotfiles/zsh"
 case "$(uname -s)" in
