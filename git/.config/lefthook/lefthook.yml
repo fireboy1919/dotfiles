@@ -6,6 +6,7 @@ pre-commit:
       run: yak lint
 
 prepare-commit-msg:
+  skip: true
   commands:
     ai-commit:
       skip:
