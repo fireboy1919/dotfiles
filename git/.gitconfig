@@ -28,3 +28,5 @@
 	templateDir = /Users/walter_phillips/.git-templates
 [alias]
 	ai-msg = "!f() { OCO_API_KEY=\"$(iap-auth https://devaigateway.a.musta.ch)\" oco; }; f"
+[maintenance]
+	repo = /Users/walter_phillips/airlab/repos/treehouse
