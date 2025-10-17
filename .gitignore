@@ -1,2 +1,1 @@
 # Ignore custom nvim plugins
-nvim/.config/nvim/lua/plugins/
