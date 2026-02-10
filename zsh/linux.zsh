@@ -53,7 +53,7 @@ aienv() {
     set +a
 
     # Create the settings.json file with env section
-    jq -n --argjson aws_vars "$(cat $temp_file)" '{"env": ($aws_vars + {"CLAUDE_CODE_USE_BEDROCK": "1", "ANTHROPIC_MODEL": "us.anthropic.claude-sonnet-4-20250514-v1:0", "ANTHROPIC_SMALL_MODEL": "us.anthropic.claude-3-5-haiku-20241022-v1:0"})}' > "$settings_file"
+    jq -n --argjson aws_vars "$(cat $temp_file)" '{"env": ($aws_vars + {"CLAUDE_CODE_USE_BEDROCK": "1"}), "includeCoAuthoredBy": false}' > "$settings_file"
 
     # Remove temporary file
     rm "$temp_file"
