@@ -303,5 +303,21 @@ esac
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+# Wezterm shell integration (semantic zones for prompt/command/output tracking)
+# Enables: Shift+Up/Down to jump between prompts, QuickSelect, per-command output selection
+if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
+  _wezterm_osc() { printf "\033]%s\007" "$1" }
+  _wezterm_precmd() {
+    _wezterm_osc "133;D"
+    _wezterm_osc "133;A"
+  }
+  _wezterm_preexec() {
+    _wezterm_osc "133;C"
+  }
+  precmd_functions+=(_wezterm_precmd)
+  preexec_functions+=(_wezterm_preexec)
+  _wezterm_osc "133;A"
+fi
+
 # Unset GRADLE_USER_HOME at the end to override any plugin settings
 unset GRADLE_USER_HOME

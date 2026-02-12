@@ -10,6 +10,7 @@ install_os_dependencies
 
 echo "Installing dotfiles..."
 ./tmux.sh
+./wezterm.sh
 ./nvim.sh
 ./git.sh
 ./zsh.sh
