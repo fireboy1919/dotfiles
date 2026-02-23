@@ -26,6 +26,28 @@ config.mux_env_remove = {
   'SSH_CONNECTION',
 }
 
+-- Auto-save workspace state periodically (like tmux-continuum)
+resurrect.state_manager.periodic_save({
+  interval_seconds = 5 * 60, -- every 5 minutes
+  save_workspaces = true,
+})
+
+-- periodic_save() only saves workspace/<name>.json; it never updates the
+-- "current_state" file that resurrect_on_gui_startup reads to know *which*
+-- workspace to restore.  Write it after every periodic save.
+wezterm.on('resurrect.state_manager.periodic_save.finished', function()
+  resurrect.state_manager.write_current_state(wezterm.mux.get_active_workspace(), 'workspace')
+end)
+
+-- Save state on GUI close (covers normal quit/logout before reboot).
+-- gui-detach fires when the window closes even though the unix mux keeps
+-- running, so state is fresh when the next gui-startup restores it.
+wezterm.on('gui-detach', function()
+  local state = resurrect.workspace_state.get_workspace_state()
+  resurrect.state_manager.save_state(state)
+  resurrect.state_manager.write_current_state(state.workspace, 'workspace')
+end)
+
 -- Auto-restore on startup (like tmux-continuum restore)
 wezterm.on('gui-startup', resurrect.state_manager.resurrect_on_gui_startup)
 
@@ -75,6 +97,12 @@ config.tab_max_width = 50
 config.font_size = 13.0
 config.window_padding = { left = 2, right = 2, top = 2, bottom = 2 }
 
+-- Dim inactive panes so the active one stands out
+config.inactive_pane_hsb = {
+  saturation = 0.8,
+  brightness = 0.6,
+}
+
 ---------------------------------------------------------------------------
 -- Mouse
 ---------------------------------------------------------------------------
@@ -105,7 +133,9 @@ config.mouse_bindings = {
 -- Colors (matching tmux status bar theme: colour234 bg, colour231 fg)
 ---------------------------------------------------------------------------
 config.colors = {
-  split = '#ffffff',
+  -- Bright pane split line (default is very subtle)
+  split = '#6699cc',
+
   tab_bar = {
     background = '#1c1c1c',
     active_tab = {
@@ -114,11 +144,11 @@ config.colors = {
       intensity = 'Bold',
     },
     inactive_tab = {
-      bg_color = '#1c1c1c',
+      bg_color = '#3a3a3a',
       fg_color = '#b2b2b2',
     },
     inactive_tab_hover = {
-      bg_color = '#3a3a3a',
+      bg_color = '#4e4e4e',
       fg_color = '#ffffff',
     },
     new_tab = {
@@ -260,7 +290,7 @@ config.keys = {
       local workspace = win:active_workspace()
       local state = resurrect.workspace_state.get_workspace_state()
       resurrect.state_manager.save_state(state)
-      resurrect.state_manager.write_current_state(workspace, 'workspace')
+      resurrect.state_manager.write_current_state(state.workspace, 'workspace')
       resurrect.window_state.save_window_action()
     end),
   },
