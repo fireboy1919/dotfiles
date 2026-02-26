@@ -5,7 +5,6 @@ export KUBE_EDITOR=nvim
 export EDITOR=nvim
 export VISUAL=nvim
 export XDG_CONFIG_HOME=$HOME/.config
-
 # Add dotfiles zsh scripts to PATH
 export PATH="$HOME/dotfiles/zsh:$HOME/.local/bin:$PATH"
 
@@ -252,7 +251,6 @@ zinit wait lucid for \
   jocelynmallon/zshmarks \
   zsh-users/zsh-autosuggestions \
   OMZP::vi-mode \
-  OMZP::kubectl \
   OMZP::git-auto-fetch \
   OMZP::last-working-dir \
   OMZP::dotenv \
@@ -262,6 +260,7 @@ zinit wait lucid for \
   OMZP::sudo \
   chuwy/zsh-secrets \
   lukechilds/zsh-nvm
+
 
 # Cross-platform SDKMAN setup
 WGET_CMD=""

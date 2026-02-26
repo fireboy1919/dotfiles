@@ -1,5 +1,8 @@
 # Linux-specific configurations
 
+# Use KDE's askpass for GUI sudo prompts
+export SUDO_ASKPASS=/usr/bin/ksshaskpass
+
 # Linux PATH settings
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export PATH=$PATH:~/.kube/plugins/jordanwilson230
