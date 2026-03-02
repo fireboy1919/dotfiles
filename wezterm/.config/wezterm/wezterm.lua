@@ -26,11 +26,42 @@ config.mux_env_remove = {
   'SSH_CONNECTION',
 }
 
--- Auto-save workspace state periodically (like tmux-continuum)
-resurrect.state_manager.periodic_save()
-
 -- Auto-restore on startup (like tmux-continuum restore)
 wezterm.on('gui-startup', resurrect.state_manager.resurrect_on_gui_startup)
+
+-- Save workspace state and track current (used by event handlers below)
+local function save_workspace(window)
+  local workspace = window:active_workspace()
+  local state = resurrect.workspace_state.get_workspace_state()
+  resurrect.state_manager.save_state(state)
+  resurrect.state_manager.write_current_state(workspace, 'workspace')
+end
+
+-- Save when pane/tab structure changes (new split, new tab, closed pane).
+-- pane-focus-changed fires whenever focus moves to a pane, including on creation.
+-- We compare tab+pane counts so we only save on structural changes, not focus switches.
+local last_structure = {}
+wezterm.on('pane-focus-changed', function(window, pane)
+  local win_id = tostring(window:window_id())
+  local tabs = window:mux_window():tabs()
+  local pane_count = 0
+  for _, tab in ipairs(tabs) do
+    pane_count = pane_count + #tab:panes()
+  end
+  local sig = #tabs .. ':' .. pane_count
+  if last_structure[win_id] ~= sig then
+    last_structure[win_id] = sig
+    save_workspace(window)
+  end
+end)
+
+-- Save when CWD changes. Shell precmd sends OSC 1337 SetUserVar=WEZTERM_SAVE
+-- only when $PWD changes (see _wezterm_precmd in .zshrc).
+wezterm.on('user-var-changed', function(window, pane, name, value)
+  if name == 'WEZTERM_SAVE' then
+    save_workspace(window)
+  end
+end)
 
 ---------------------------------------------------------------------------
 -- General
@@ -53,12 +84,28 @@ config.mouse_bindings = {
     mods = 'NONE',
     action = act.PasteFrom 'Clipboard',
   },
+  {
+    event = { Up = { streak = 1, button = 'Left' } },
+    mods = 'NONE',
+    action = act.CompleteSelectionOrOpenLinkAtMouseCursor 'Clipboard',
+  },
+  {
+    event = { Down = { streak = 1, button = { WheelUp = 1 } } },
+    mods = 'NONE',
+    action = act.ScrollByLine(-3),
+  },
+  {
+    event = { Down = { streak = 1, button = { WheelDown = 1 } } },
+    mods = 'NONE',
+    action = act.ScrollByLine(3),
+  },
 }
 
 ---------------------------------------------------------------------------
 -- Colors (matching tmux status bar theme: colour234 bg, colour231 fg)
 ---------------------------------------------------------------------------
 config.colors = {
+  split = '#ffffff',
   tab_bar = {
     background = '#1c1c1c',
     active_tab = {
@@ -210,8 +257,10 @@ config.keys = {
     key = 'S',
     mods = 'LEADER|SHIFT',
     action = wezterm.action_callback(function(win, pane)
+      local workspace = win:active_workspace()
       local state = resurrect.workspace_state.get_workspace_state()
       resurrect.state_manager.save_state(state)
+      resurrect.state_manager.write_current_state(workspace, 'workspace')
       resurrect.window_state.save_window_action()
     end),
   },

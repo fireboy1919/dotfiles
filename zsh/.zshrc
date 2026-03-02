@@ -309,6 +309,11 @@ if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
   _wezterm_precmd() {
     _wezterm_osc "133;D"
     _wezterm_osc "133;A"
+    # Trigger resurrect save when CWD changes (SetUserVar value must be base64)
+    if [[ "$PWD" != "$_WEZTERM_LAST_PWD" ]]; then
+      _WEZTERM_LAST_PWD="$PWD"
+      printf "\033]1337;SetUserVar=WEZTERM_SAVE=%s\007" "$(printf '1' | base64 -w 0)"
+    fi
   }
   _wezterm_preexec() {
     _wezterm_osc "133;C"
