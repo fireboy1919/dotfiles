@@ -8,12 +8,6 @@ export XDG_CONFIG_HOME=$HOME/.config
 # Add dotfiles zsh scripts to PATH
 export PATH="$HOME/dotfiles/zsh:$HOME/.local/bin:$PATH"
 
-# Ensure SSH agent is running and keys are loaded
-if [ -z "$SSH_AUTH_SOCK" ]; then
-    eval "$(ssh-agent -s)" >/dev/null 2>&1
-    # Add your SSH keys (adjust path as needed)
-    ssh-add ~/.ssh/id_rsa 2>/dev/null || ssh-add ~/.ssh/id_ed25519 2>/dev/null || true
-fi
 
 # Common aliases
 alias j="jump"

@@ -5,9 +5,9 @@ local config = wezterm.config_builder()
 
 ---------------------------------------------------------------------------
 -- Leader key (tmux prefix equivalent)
--- Matches tmux prefix: F10 (Caps Lock remapped to F10 via Karabiner/etc.)
+-- Matches tmux prefix: F13 (Caps Lock remapped to F13 via xmodmap on deskflow server)
 ---------------------------------------------------------------------------
-config.leader = { key = 'F10', timeout_milliseconds = 1000 }
+config.leader = { key = 'F13', timeout_milliseconds = 1000 }
 
 ---------------------------------------------------------------------------
 -- Session persistence (like tmux-resurrect + tmux-continuum)
@@ -26,19 +26,6 @@ config.mux_env_remove = {
   'SSH_CONNECTION',
 }
 
--- Auto-save workspace state periodically (like tmux-continuum)
-resurrect.state_manager.periodic_save({
-  interval_seconds = 5 * 60, -- every 5 minutes
-  save_workspaces = true,
-})
-
--- periodic_save() only saves workspace/<name>.json; it never updates the
--- "current_state" file that resurrect_on_gui_startup reads to know *which*
--- workspace to restore.  Write it after every periodic save.
-wezterm.on('resurrect.state_manager.periodic_save.finished', function()
-  resurrect.state_manager.write_current_state(wezterm.mux.get_active_workspace(), 'workspace')
-end)
-
 -- Save state on GUI close (covers normal quit/logout before reboot).
 -- gui-detach fires when the window closes even though the unix mux keeps
 -- running, so state is fresh when the next gui-startup restores it.
@@ -48,9 +35,6 @@ wezterm.on('gui-detach', function()
   resurrect.state_manager.write_current_state(state.workspace, 'workspace')
 end)
 
--- Auto-restore on startup (like tmux-continuum restore)
-wezterm.on('gui-startup', resurrect.state_manager.resurrect_on_gui_startup)
-
 -- Save workspace state and track current (used by event handlers below)
 local function save_workspace(window)
   local workspace = window:active_workspace()
@@ -58,6 +42,21 @@ local function save_workspace(window)
   resurrect.state_manager.save_state(state)
   resurrect.state_manager.write_current_state(workspace, 'workspace')
 end
+
+-- Auto-restore on startup (like tmux-continuum restore).
+-- gui-startup is never emitted in 'connect unix' mode.
+-- The mux server writes /tmp/wezterm-fresh-mux on its first config load;
+-- wezterm.GLOBAL persists across hot-reloads so config edits don't re-write it,
+-- and wezterm.gui is nil in the headless mux server but a real table in the GUI.
+-- update-status reads and deletes that marker for a one-shot restore.
+if not wezterm.GLOBAL.mux_initialized then
+  wezterm.GLOBAL.mux_initialized = true
+  if not wezterm.gui then
+    local f = io.open('/tmp/wezterm-fresh-mux', 'w')
+    if f then f:write(tostring(os.time())); f:close() end
+  end
+end
+local _startup_restore_done = false
 
 -- Save when pane/tab structure changes (new split, new tab, closed pane).
 -- pane-focus-changed fires whenever focus moves to a pane, including on creation.
@@ -251,11 +250,11 @@ config.keys = {
   -- Zoom/fullscreen pane (LEADER + z) — matches tmux resize-pane -Z
   { key = 'z', mods = 'LEADER', action = act.TogglePaneZoomState },
 
-  -- Last tab (double-tap F10) — matches tmux bind-key F10 last-window
-  { key = 'F10', mods = 'LEADER', action = act.ActivateLastTab },
+  -- Last tab (double-tap F13) — matches tmux bind-key F10 last-window
+  { key = 'F13', mods = 'LEADER', action = act.ActivateLastTab },
 
-  -- Send F10 through (LEADER + a) — matches tmux send-prefix for nested sessions
-  { key = 'a', mods = 'LEADER', action = act.SendKey { key = 'F10' } },
+  -- Send F13 through (LEADER + a) — matches tmux send-prefix for nested sessions
+  { key = 'a', mods = 'LEADER', action = act.SendKey { key = 'F13' } },
 
   -- Workspaces (tmux sessions equivalent)
   { key = 's', mods = 'LEADER', action = act.ShowLauncherArgs { flags = 'FUZZY|WORKSPACES' } },
@@ -332,6 +331,42 @@ config.keys = {
 -- Right: date/time (like tmux %a %d %b %Y :: %l:%M %p)
 ---------------------------------------------------------------------------
 wezterm.on('update-status', function(window, pane)
+  if not _startup_restore_done then
+    local mf = io.open('/tmp/wezterm-fresh-mux', 'r')
+    if mf then
+      _startup_restore_done = true
+      local t = tonumber(mf:read '*l')
+      mf:close()
+      os.remove('/tmp/wezterm-fresh-mux')
+      if t and (os.time() - t) < 30 then
+        local state_dir = resurrect.state_manager.save_state_dir
+        local sf = io.open(state_dir .. 'current_state', 'r')
+        if sf then
+          local name = sf:read '*l'
+          local type_str = sf:read '*l'
+          sf:close()
+          if type_str == 'workspace' then
+            local ok, state = pcall(resurrect.state_manager.load_state, name, type_str)
+            if ok and state then
+              resurrect.workspace_state.restore_workspace(state, {
+                window = window:mux_window(),
+                close_open_tabs = true,
+                close_open_panes = true,
+                spawn_in_workspace = true,
+                relative = true,
+                restore_text = true,
+                on_pane_restore = resurrect.tab_state.default_on_pane_restore,
+              })
+              wezterm.mux.set_active_workspace(name)
+            end
+          end
+        end
+      end
+    elseif (os.time() - _startup_time) > 30 then
+      _startup_restore_done = true
+    end
+  end
+
   local workspace = window:active_workspace()
 
   local date = wezterm.strftime '%a %d %b %Y :: %l:%M %p'

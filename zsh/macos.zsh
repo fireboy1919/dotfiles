@@ -1,6 +1,24 @@
 # macOS-specific configurations
 TMPDIR="/tmp"
 
+# Stable SSH_AUTH_SOCK for WezTerm's mux server (uses launchctl, macOS-only).
+# The mux server caches env vars from when it started, so the original socket
+# path goes stale after reboot/re-login. We keep a stable symlink that gets
+# refreshed to the real agent (YubiKey-capable) on every new shell.
+if [[ "$TERM_PROGRAM" == "WezTerm" ]]; then
+  _stable_sock="$HOME/.ssh/agent.sock"
+  _real_sock="${SSH_AUTH_SOCK:-$(launchctl getenv SSH_AUTH_SOCK 2>/dev/null)}"
+
+  if [[ -S "$_real_sock" && "$_real_sock" != "$_stable_sock" ]]; then
+    ln -sf "$_real_sock" "$_stable_sock"
+  elif [[ ! -S "$_stable_sock" ]]; then
+    rm -f "$_stable_sock"
+    eval "$(ssh-agent -a "$_stable_sock")" >/dev/null 2>&1
+  fi
+  export SSH_AUTH_SOCK="$_stable_sock"
+  unset _stable_sock _real_sock
+fi
+
 # Initialize key array for macOS (fix for empty key sequences)
 typeset -g -A key
 key[Up]=${terminfo[kcuu1]}
