@@ -49,10 +49,12 @@ end
 -- wezterm.GLOBAL persists across hot-reloads so config edits don't re-write it,
 -- and wezterm.gui is nil in the headless mux server but a real table in the GUI.
 -- update-status reads and deletes that marker for a one-shot restore.
+-- The marker lives in resurrect's state dir (cross-platform, guaranteed to exist).
 if not wezterm.GLOBAL.mux_initialized then
   wezterm.GLOBAL.mux_initialized = true
   if not wezterm.gui then
-    local f = io.open('/tmp/wezterm-fresh-mux', 'w')
+    local marker = resurrect.state_manager.save_state_dir .. 'fresh-mux'
+    local f = io.open(marker, 'w')
     if f then f:write(tostring(os.time())); f:close() end
   end
 end
@@ -332,12 +334,13 @@ config.keys = {
 ---------------------------------------------------------------------------
 wezterm.on('update-status', function(window, pane)
   if not _startup_restore_done then
-    local mf = io.open('/tmp/wezterm-fresh-mux', 'r')
+    local marker = resurrect.state_manager.save_state_dir .. 'fresh-mux'
+    local mf = io.open(marker, 'r')
     if mf then
       _startup_restore_done = true
       local t = tonumber(mf:read '*l')
       mf:close()
-      os.remove('/tmp/wezterm-fresh-mux')
+      os.remove(marker)
       if t and (os.time() - t) < 30 then
         local state_dir = resurrect.state_manager.save_state_dir
         local sf = io.open(state_dir .. 'current_state', 'r')
@@ -362,7 +365,7 @@ wezterm.on('update-status', function(window, pane)
           end
         end
       end
-    elseif (os.time() - _startup_time) > 30 then
+    else
       _startup_restore_done = true
     end
   end
